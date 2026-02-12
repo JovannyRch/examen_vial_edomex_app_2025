@@ -74,6 +74,7 @@ final List<Question> questions = [
 ### 5. Assets
 
 Reemplaza los archivos en `assets/`:
+
 - `assets/logo.png` — Logo de la app (se usa en splash)
 - `assets/files/guia_manejo.pdf` — Tu PDF de guía (o elimina la funcionalidad)
 - `assets/sounds/` — Archivos de sonido (.mp3)
@@ -133,10 +134,10 @@ lib/
 
 ## 🎨 Documentación
 
-| Documento | Descripción |
-|-----------|-------------|
+| Documento                                      | Descripción                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Paleta de colores, tipografía, componentes, animaciones, espaciado |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Servicios, patrones, dependencias, configuración Android |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)   | Servicios, patrones, dependencias, configuración Android           |
 
 ---
 
@@ -147,10 +148,10 @@ lib/
 
 # Setup
 ./commands.sh setup <id> <"nombre"> <proyecto>   # Setup completo
-./commands.sh info                                # Ver configuración actual  
+./commands.sh info                                # Ver configuración actual
 ./commands.sh checklist                           # Checklist pre-deploy
 
-# Configuración  
+# Configuración
 ./commands.sh change-app-id com.company.app       # Android App ID
 ./commands.sh change-app-name "Mi App"            # Nombre visible
 ./commands.sh change-version 1.2.0 15             # Versión
