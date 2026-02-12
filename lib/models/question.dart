@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:examen_vial_edomex_app_2025/models/option.dart';
+import 'package:my_quiz_app/models/option.dart';
 
 class Question {
   final int id;

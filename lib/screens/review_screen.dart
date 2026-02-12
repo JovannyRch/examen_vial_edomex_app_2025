@@ -1,10 +1,10 @@
-import 'package:examen_vial_edomex_app_2025/models/option.dart';
-import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
-import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
-import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
+import 'package:my_quiz_app/models/option.dart';
+import 'package:my_quiz_app/services/admob_service.dart';
+import 'package:my_quiz_app/services/database_service.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
+import 'package:my_quiz_app/services/sound_service.dart';
+import 'package:my_quiz_app/theme/app_theme.dart';
+import 'package:my_quiz_app/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 

@@ -1,10 +1,10 @@
-import 'package:examen_vial_edomex_app_2025/screens/home_screen.dart';
-import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/theme_service.dart';
-import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
+import 'package:my_quiz_app/screens/home_screen.dart';
+import 'package:my_quiz_app/services/admob_service.dart';
+import 'package:my_quiz_app/services/notification_service.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
+import 'package:my_quiz_app/services/sound_service.dart';
+import 'package:my_quiz_app/services/theme_service.dart';
+import 'package:my_quiz_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       builder: (context, mode, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Examen Vial EdoMéx',
+          title: 'Mi App de Examen',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: mode,

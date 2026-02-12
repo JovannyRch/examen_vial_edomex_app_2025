@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
+import 'package:my_quiz_app/services/admob_service.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
 
 /// Reusable AdMob banner widget.
 /// Handles loading, displaying, and disposing the banner ad.

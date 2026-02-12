@@ -8,13 +8,13 @@
   <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
   <uses-permission android:name="com.android.vending.BILLING" />
   <application
-        android:label="Examen EdoMéx"
+        android:label="Mi App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-    <!-- AdMob App ID -->
+    <!-- AdMob App ID — TODO: Reemplazar con tu ID -->
     <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4665787383933447~7107593811"/>
+            android:value="ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"/>
     <activity
             android:name=".MainActivity"
             android:exported="true"

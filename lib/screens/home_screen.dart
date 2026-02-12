@@ -1,20 +1,20 @@
-import 'package:examen_vial_edomex_app_2025/const/const.dart';
-import 'package:examen_vial_edomex_app_2025/data/data.dart';
-import 'package:examen_vial_edomex_app_2025/screens/exam_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/favorites_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/guide_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/pdf_viewer_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/category_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/info_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/pro_screen.dart';
-import 'package:examen_vial_edomex_app_2025/screens/progress_screen.dart';
-import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/theme_service.dart';
-import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
-import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
+import 'package:my_quiz_app/const/const.dart';
+import 'package:my_quiz_app/data/data.dart';
+import 'package:my_quiz_app/screens/exam_screen.dart';
+import 'package:my_quiz_app/screens/favorites_screen.dart';
+import 'package:my_quiz_app/screens/guide_screen.dart';
+import 'package:my_quiz_app/screens/pdf_viewer_screen.dart';
+import 'package:my_quiz_app/screens/category_screen.dart';
+import 'package:my_quiz_app/screens/info_screen.dart';
+import 'package:my_quiz_app/screens/pro_screen.dart';
+import 'package:my_quiz_app/screens/progress_screen.dart';
+import 'package:my_quiz_app/services/database_service.dart';
+import 'package:my_quiz_app/services/notification_service.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
+import 'package:my_quiz_app/services/sound_service.dart';
+import 'package:my_quiz_app/services/theme_service.dart';
+import 'package:my_quiz_app/theme/app_theme.dart';
+import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 8), */
                     Text(
-                      '¡Prepárate para aprobar tu examen de manejo! 🚗',
+                      '¡Prepárate para aprobar tu examen! 📝',
                       style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,

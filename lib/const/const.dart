@@ -1,8 +1,8 @@
 const String PDF_URL =
-    "https://jovannyrch.github.io/politicas/public/guia_manejo.pdf";
+    "https://example.com/your_guide.pdf";
 
 const String PLAYSTORE_APP_ID =
-    "'https://play.google.com/store/apps/details?id=com.jovasoft.examenvialedomex'";
+    "https://play.google.com/store/apps/details?id=com.yourcompany.yourapp";
 
 // ─── Exam Configuration ─────────────────────────────────────────────────────
 const int EXAM_DURATION_MINUTES = 5;

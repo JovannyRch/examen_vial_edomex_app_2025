@@ -5,14 +5,14 @@ class Option {
   Option({required this.id, required this.text});
 }
 
-/// Categories for practice mode
+/// Categories for practice mode — TODO: Customize for your app
 enum QuestionCategory {
-  senales('Señales de Tránsito', '🚦'),
-  circulacion('Circulación', '🚗'),
-  multas('Multas y Sanciones', '⚖️'),
-  seguridad('Seguridad Vial', '🛡️'),
-  vehiculo('Vehículo y Documentos', '📋'),
-  prioridades('Prioridades y Accidentes', '🚨');
+  senales('Categoría 1', '📖'),
+  circulacion('Categoría 2', '📚'),
+  multas('Categoría 3', '📝'),
+  seguridad('Categoría 4', '🛡️'),
+  vehiculo('Categoría 5', '📋'),
+  prioridades('Categoría 6', '🔔');
 
   final String label;
   final String emoji;

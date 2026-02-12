@@ -3,9 +3,9 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
-import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
+import 'package:my_quiz_app/services/admob_service.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
+import 'package:my_quiz_app/theme/app_theme.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class PdfViewerScreen extends StatefulWidget {

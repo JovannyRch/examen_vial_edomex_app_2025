@@ -1,4 +1,4 @@
-import 'package:examen_vial_edomex_app_2025/services/theme_service.dart';
+import 'package:my_quiz_app/services/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

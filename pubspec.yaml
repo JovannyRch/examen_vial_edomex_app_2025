@@ -1,7 +1,7 @@
-name: examen_vial_edomex_app_2025
-description: "A new Flutter project."
+name: my_quiz_app
+description: "Quiz/Exam app built with Flutter — template base."
 
-version: 1.0.0+10
+version: 1.0.0+1
 
 environment:
   sdk: ^3.7.0

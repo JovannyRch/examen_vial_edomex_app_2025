@@ -1,6 +1,6 @@
-import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
-import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
-import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
+import 'package:my_quiz_app/services/purchase_service.dart';
+import 'package:my_quiz_app/services/sound_service.dart';
+import 'package:my_quiz_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class ProScreen extends StatefulWidget {
