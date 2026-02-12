@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -29,6 +30,8 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   }
 
   void _loadInterstitialAd() async {
+    // Skip interstitial for Pro users
+    if (PurchaseService().isProUser) return;
     _interstitialAd = await AdMobService.createInterstitialAd();
     Future.delayed(const Duration(seconds: 3), () {
       if (_interstitialAd != null && mounted) {

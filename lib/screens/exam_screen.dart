@@ -1,13 +1,19 @@
+import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/models/option.dart';
 import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
 import 'package:examen_vial_edomex_app_2025/screens/review_screen.dart';
+import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class QuestionWithOptions {
@@ -499,6 +505,7 @@ class _ResultsScreenState extends State<ResultsScreen>
   late AnimationController _scoreController;
   late AnimationController _bounceController;
   late Animation<double> _bounceAnimation;
+  InterstitialAd? _interstitialAd;
 
   @override
   void initState() {
@@ -535,7 +542,23 @@ class _ResultsScreenState extends State<ResultsScreen>
     });
 
     Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) _bounceController.forward();
+      if (mounted) {
+        _bounceController.forward();
+        // Load interstitial ad after animations settle
+        _loadInterstitialAd();
+      }
+    });
+  }
+
+  void _loadInterstitialAd() async {
+    // Skip interstitial for Pro users
+    if (PurchaseService().isProUser) return;
+    _interstitialAd = await AdMobService.createInterstitialAd();
+    // Show ad 2 seconds after results appear
+    Future.delayed(const Duration(seconds: 2), () {
+      if (_interstitialAd != null && mounted) {
+        AdMobService.showInterstitialAd(_interstitialAd);
+      }
     });
   }
 
@@ -543,6 +566,7 @@ class _ResultsScreenState extends State<ResultsScreen>
   void dispose() {
     _scoreController.dispose();
     _bounceController.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -551,7 +575,7 @@ class _ResultsScreenState extends State<ResultsScreen>
       final result = ExamResult(
         correctAnswers: widget.totalCorrect,
         totalQuestions: widget.totalQuestions,
-        passed: widget.totalCorrect >= 8,
+        passed: widget.totalCorrect >= 6,
         timeSpentSeconds: widget.timeSpentSeconds,
         date: DateTime.now(),
       );
@@ -568,6 +592,44 @@ class _ResultsScreenState extends State<ResultsScreen>
       if (failedIds.isNotEmpty) {
         await DatabaseService().saveFailedQuestions(failedIds);
       }
+
+      // Check and show review prompt if conditions are met
+      await _checkAndShowReviewPrompt();
+    } catch (e) {
+      // Fail silently — don't interrupt the results view
+    }
+  }
+
+  Future<void> _checkAndShowReviewPrompt() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final hasRequestedReview = prefs.getBool('has_requested_review') ?? false;
+
+      // Only show once per user
+      if (hasRequestedReview) return;
+
+      // Only show if user passed the exam
+      final bool passed = widget.totalCorrect >= 6;
+      if (!passed) return;
+
+      // Check if user has completed 3+ exams
+      final stats = await DatabaseService().getAllStats();
+      if (stats.length < 3) return;
+
+      // All conditions met - request review
+      final inAppReview = InAppReview.instance;
+
+      // Check if review is available on this device
+      if (await inAppReview.isAvailable()) {
+        // Request the review (this may or may not show depending on OS rules)
+        await inAppReview.requestReview();
+        // Mark as requested so we don't ask again
+        await prefs.setBool('has_requested_review', true);
+      } else {
+        // Fallback: open Play Store listing directly
+        await inAppReview.openStoreListing();
+        await prefs.setBool('has_requested_review', true);
+      }
     } catch (e) {
       // Fail silently — don't interrupt the results view
     }
@@ -575,7 +637,7 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bool passed = widget.totalCorrect >= 8;
+    final bool passed = widget.totalCorrect >= 6;
     final double percentage = widget.totalCorrect / widget.totalQuestions;
     final Color accentColor = passed ? AppColors.primary : AppColors.red;
 
@@ -692,7 +754,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                   final text =
                       '$status mi examen de práctica vial EdoMex con $score $emoji 🚗\n\n'
                       'Prepárate para tu examen de manejo con esta app:\n'
-                      'https://play.google.com/store/apps/details?id=com.jovannyramirez.examen_vial_edomex_app_2025';
+                      '$PLAYSTORE_APP_ID';
                   SharePlus.instance.share(ShareParams(text: text));
                 },
               ),

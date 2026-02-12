@@ -1,9 +1,12 @@
 import 'package:examen_vial_edomex_app_2025/models/option.dart';
+import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /// Data class to hold each question + the options shown + user's answer
 class ReviewItem {
@@ -39,6 +42,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   Set<int> _favoriteIds = {};
+  InterstitialAd? _interstitialAd;
 
   @override
   void initState() {
@@ -48,6 +52,13 @@ class _ReviewScreenState extends State<ReviewScreen>
       duration: const Duration(milliseconds: 600),
     )..forward();
     _loadFavorites();
+    _loadInterstitialAd();
+  }
+
+  void _loadInterstitialAd() async {
+    // Skip interstitial for Pro users
+    if (PurchaseService().isProUser) return;
+    _interstitialAd = await AdMobService.createInterstitialAd();
   }
 
   Future<void> _loadFavorites() async {
@@ -72,6 +83,7 @@ class _ReviewScreenState extends State<ReviewScreen>
   @override
   void dispose() {
     _animController.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -129,7 +141,19 @@ class _ReviewScreenState extends State<ReviewScreen>
           color: AppColors.primary,
           icon: Icons.home_rounded,
           onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            // Show interstitial before going home
+            if (_interstitialAd != null) {
+              AdMobService.showInterstitialAd(_interstitialAd);
+              // Wait a bit before navigating (ad will show)
+              final nav = Navigator.of(context);
+              Future.delayed(const Duration(milliseconds: 100), () {
+                if (mounted) {
+                  nav.popUntil((route) => route.isFirst);
+                }
+              });
+            } else {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            }
           },
         ),
       ),
