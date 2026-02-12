@@ -1,5 +1,6 @@
 import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
+import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -124,7 +125,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Aún no hay datos',
               style: TextStyle(
                 fontSize: 22,
@@ -133,7 +134,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Realiza tu primer examen simulado\npara comenzar a ver tu progreso aquí.',
               style: TextStyle(
                 fontSize: 15,
@@ -288,13 +289,13 @@ class _ProgressScreenState extends State<ProgressScreen>
         ),
         child: Column(
           children: [
-            const Icon(
+            Icon(
               Icons.show_chart_rounded,
               size: 40,
               color: AppColors.textLight,
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Necesitas al menos 2 exámenes\npara ver la gráfica de evolución',
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -324,7 +325,7 @@ class _ProgressScreenState extends State<ProgressScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 8),
             child: Text(
               'Evolución de calificaciones',
@@ -366,7 +367,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                       getTitlesWidget: (value, meta) {
                         return Text(
                           '${value.toInt()}%',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textLight,
                             fontSize: 11,
                           ),
@@ -389,7 +390,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         }
                         return Text(
                           '#${idx + 1}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textLight,
                             fontSize: 10,
                           ),
@@ -409,7 +410,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, percent, bar, index) {
-                        final isPassed = spot.y >= 80;
+                        final isPassed = spot.y >= EXAM_PASSING_PERCENTAGE;
                         return FlDotCirclePainter(
                           radius: 4,
                           color: isPassed ? AppColors.primary : AppColors.red,
@@ -426,8 +427,11 @@ class _ProgressScreenState extends State<ProgressScreen>
                   // Pass threshold line
                   LineChartBarData(
                     spots: [
-                      FlSpot(0, 80),
-                      FlSpot((_lastResults.length - 1).toDouble(), 80),
+                      FlSpot(0, EXAM_PASSING_PERCENTAGE),
+                      FlSpot(
+                        (_lastResults.length - 1).toDouble(),
+                        EXAM_PASSING_PERCENTAGE,
+                      ),
                     ],
                     isCurved: false,
                     color: AppColors.primary.withValues(alpha: 0.4),
@@ -474,8 +478,8 @@ class _ProgressScreenState extends State<ProgressScreen>
                 ),
               ),
               const SizedBox(width: 6),
-              const Text(
-                'Línea de aprobación (80%)',
+              Text(
+                'Línea de aprobación (${EXAM_PASSING_PERCENTAGE.round()}%)',
                 style: TextStyle(color: AppColors.textLight, fontSize: 11),
               ),
             ],
@@ -494,7 +498,7 @@ class _ProgressScreenState extends State<ProgressScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Últimos resultados',
           style: TextStyle(
             fontSize: 16,
@@ -545,7 +549,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                     children: [
                       Text(
                         '${r.correctAnswers}/${r.totalQuestions} correctas',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           color: AppColors.textPrimary,
@@ -554,7 +558,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                       const SizedBox(height: 4),
                       Text(
                         '${timeMin}m ${timeSec}s  •  ${_formatDate(r.date)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -638,10 +642,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ],
       ),

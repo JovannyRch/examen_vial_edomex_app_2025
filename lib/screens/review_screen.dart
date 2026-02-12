@@ -164,7 +164,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -187,14 +187,14 @@ class _ReviewScreenState extends State<ReviewScreen>
                     color: AppColors.progressTrack,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_rounded,
                     color: AppColors.textSecondary,
                   ),
                 ),
               ),
               const SizedBox(width: 14),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Revisión de Respuestas',
                   style: TextStyle(
@@ -358,7 +358,7 @@ class _ReviewCardState extends State<_ReviewCard> {
       child: Container(
         margin: const EdgeInsets.only(top: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: statusColor.withValues(alpha: 0.35),
@@ -409,7 +409,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                     Expanded(
                       child: Text(
                         item.question.text,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -637,7 +637,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                   Expanded(
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                           height: 1.4,

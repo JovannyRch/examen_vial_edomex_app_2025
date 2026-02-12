@@ -49,7 +49,7 @@ class _InfoScreenState extends State<InfoScreen>
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
                       color: AppColors.textPrimary,
                     ),
@@ -59,7 +59,7 @@ class _InfoScreenState extends State<InfoScreen>
                     },
                   ),
                   const SizedBox(width: 4),
-                  const Text(
+                  Text(
                     'Información del Examen',
                     style: TextStyle(
                       fontSize: 20,
@@ -338,7 +338,7 @@ class _InfoScreenState extends State<InfoScreen>
                               color: AppColors.red.withValues(alpha: 0.2),
                             ),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
                               Text(
                                 '\$2,171.00 MXN',
@@ -566,7 +566,7 @@ class _InfoScreenState extends State<InfoScreen>
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textPrimary,
                 height: 1.4,
@@ -598,7 +598,7 @@ class _InfoScreenState extends State<InfoScreen>
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 color: AppColors.textPrimary,
                 height: 1.4,
@@ -631,7 +631,7 @@ class _InfoScreenState extends State<InfoScreen>
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -639,7 +639,7 @@ class _InfoScreenState extends State<InfoScreen>
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -672,10 +672,7 @@ class _InfoScreenState extends State<InfoScreen>
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 15,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 15, color: AppColors.textPrimary),
             ),
             Text(
               price,
@@ -744,10 +741,7 @@ class _InfoScreenState extends State<InfoScreen>
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
             ),
           ),
           Container(
@@ -784,7 +778,7 @@ class _InfoScreenState extends State<InfoScreen>
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -793,7 +787,7 @@ class _InfoScreenState extends State<InfoScreen>
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
                     height: 1.4,
@@ -821,7 +815,7 @@ class _InfoScreenState extends State<InfoScreen>
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -830,7 +824,7 @@ class _InfoScreenState extends State<InfoScreen>
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
                     height: 1.4,
@@ -848,7 +842,7 @@ class _InfoScreenState extends State<InfoScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.cardBorder, width: 2),
         boxShadow: [
@@ -861,7 +855,7 @@ class _InfoScreenState extends State<InfoScreen>
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.language_rounded,
@@ -1005,7 +999,7 @@ class _InfoSectionState extends State<_InfoSection>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color:
@@ -1045,7 +1039,7 @@ class _InfoSectionState extends State<_InfoSection>
                   Expanded(
                     child: Text(
                       widget.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,

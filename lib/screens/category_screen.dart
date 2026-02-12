@@ -266,7 +266,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                   children: [
                     Text(
                       widget.category.label,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -275,7 +275,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                     const SizedBox(height: 4),
                     Text(
                       '${widget.questionCount} preguntas',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
                       ),

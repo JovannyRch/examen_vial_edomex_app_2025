@@ -102,7 +102,7 @@ class _GuideScreenState extends State<GuideScreen> {
             const SizedBox(width: 12),
             Text(
               '${_currentPage + 1}/$total',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textSecondary,
@@ -187,7 +187,7 @@ class _GuideScreenState extends State<GuideScreen> {
                       // Question text
                       Text(
                         q.text,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -245,7 +245,7 @@ class _GuideScreenState extends State<GuideScreen> {
                               ),
                               child: Text(
                                 o.text.replaceAll('[br]', '\n'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontSize: 16,
                                   height: 1.5,
@@ -263,7 +263,7 @@ class _GuideScreenState extends State<GuideScreen> {
           // Bottom navigation bar
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.surface,
               border: Border(
                 top: BorderSide(color: AppColors.cardBorder, width: 2),

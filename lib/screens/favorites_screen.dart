@@ -69,7 +69,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 Text('¿Borrar todas?', style: TextStyle(fontSize: 18)),
               ],
             ),
-            content: const Text(
+            content: Text(
               'Se eliminarán todas las preguntas guardadas. Esta acción no se puede deshacer.',
               style: TextStyle(color: AppColors.textSecondary),
             ),
@@ -187,7 +187,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Sin preguntas guardadas',
               style: TextStyle(
                 fontSize: 20,
@@ -196,7 +196,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Marca preguntas con el ícono de bookmark en la guía de estudio o revisión de examen.\n\nLas preguntas que falles en exámenes se guardarán automáticamente aquí.',
               style: TextStyle(
                 fontSize: 14,
@@ -241,7 +241,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           child: Container(
             margin: const EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: AppColors.cardBorder, width: 2),
               boxShadow: [
@@ -305,7 +305,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
                   child: Text(
                     q.text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,

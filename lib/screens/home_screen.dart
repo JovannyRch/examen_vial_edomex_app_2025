@@ -12,6 +12,7 @@ import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/theme_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +114,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 12),
+                    // Theme toggle
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          SoundService().playTap();
+                          ThemeService().toggleTheme();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.cardBorder),
+                          ),
+                          child: Icon(
+                            ThemeService().isDark
+                                ? Icons.light_mode_rounded
+                                : Icons.dark_mode_rounded,
+                            color:
+                                ThemeService().isDark
+                                    ? AppColors.orange
+                                    : AppColors.textSecondary,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     // Logo
                     /* Container(
                       padding: const EdgeInsets.all(16),
@@ -312,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.cardBorder),
         ),
@@ -322,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const SizedBox(height: 2),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -330,10 +360,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -582,7 +609,7 @@ class _ActionCardState extends State<_ActionCard> {
                   children: [
                     Text(
                       widget.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -591,7 +618,7 @@ class _ActionCardState extends State<_ActionCard> {
                     const SizedBox(height: 4),
                     Text(
                       widget.subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
                       ),
@@ -600,7 +627,7 @@ class _ActionCardState extends State<_ActionCard> {
                 ),
               ),
               // Arrow
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textLight,
                 size: 24,
@@ -674,7 +701,7 @@ class _CompactCardState extends State<_CompactCard> {
               const SizedBox(height: 8),
               Text(
                 widget.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -757,10 +784,10 @@ class _ReminderBannerState extends State<_ReminderBanner> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
-              surface: Colors.white,
+              surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
             ),
           ),
@@ -795,7 +822,7 @@ class _ReminderBannerState extends State<_ReminderBanner> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.cardBorder, width: 2),
         boxShadow: [
@@ -829,7 +856,7 @@ class _ReminderBannerState extends State<_ReminderBanner> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Recordatorio diario',
                       style: TextStyle(
                         fontSize: 15,
@@ -841,7 +868,7 @@ class _ReminderBannerState extends State<_ReminderBanner> {
                       _enabled
                           ? 'Te avisamos a las ${_formatTime(_time)}'
                           : 'No olvides practicar',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),

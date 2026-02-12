@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -64,7 +65,7 @@ class AdMobService {
   }
 
   static Future<InterstitialAd?> createInterstitialAd() async {
-    InterstitialAd? interstitialAd;
+    final Completer<InterstitialAd?> completer = Completer<InterstitialAd?>();
 
     await InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
@@ -72,16 +73,16 @@ class AdMobService {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           print('InterstitialAd loaded.');
-          interstitialAd = ad;
+          completer.complete(ad);
         },
         onAdFailedToLoad: (LoadAdError error) {
           print('InterstitialAd failed to load: $error');
-          interstitialAd = null;
+          completer.complete(null);
         },
       ),
     );
 
-    return interstitialAd;
+    return completer.future;
   }
 
   static void showInterstitialAd(InterstitialAd? interstitialAd) {

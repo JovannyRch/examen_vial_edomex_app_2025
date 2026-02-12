@@ -92,7 +92,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back_rounded,
                           color: AppColors.textPrimary,
                         ),
@@ -152,7 +152,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                                 const SizedBox(height: 20),
                                 Text(
                                   isPro ? '¡Ya eres Pro! ⭐' : 'Versión Pro',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.textPrimary,
@@ -163,7 +163,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                                   isPro
                                       ? 'Disfruta todas las ventajas sin anuncios'
                                       : 'Desbloquea la experiencia completa',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     color: AppColors.textSecondary,
                                   ),
@@ -223,7 +223,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                           isPro
                               ? ''
                               : 'Compra única · Sin suscripciones · Acceso permanente',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             color: AppColors.textLight,
                           ),
@@ -292,7 +292,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.cardBorder, width: 1.5),
         ),
@@ -314,7 +314,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -323,7 +323,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 3),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),

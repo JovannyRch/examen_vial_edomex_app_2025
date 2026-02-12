@@ -38,14 +38,14 @@ class _ExamScreenState extends State<ExamScreen> {
   int currentIndex = 0;
 
   late Timer timer;
-  int secondsRemaining = 5 * 60;
+  int secondsRemaining = EXAM_DURATION_MINUTES * 60;
 
   @override
   void initState() {
     super.initState();
 
     List<Question> qs = List.from(widget.allQuestions)..shuffle();
-    qs = qs.take(10).toList();
+    qs = qs.take(EXAM_TOTAL_QUESTIONS).toList();
 
     examQuestions =
         qs
@@ -87,7 +87,7 @@ class _ExamScreenState extends State<ExamScreen> {
       }
     }
 
-    final int timeSpent = (30 * 60) - secondsRemaining;
+    final int timeSpent = (EXAM_DURATION_MINUTES * 60) - secondsRemaining;
 
     Navigator.pushReplacement(
       context,
@@ -132,14 +132,14 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ],
             ),
-            content: const Text(
+            content: Text(
               'Perderás todo tu progreso actual.',
               style: TextStyle(color: AppColors.textSecondary),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text(
+                child: Text(
                   'Cancelar',
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
@@ -167,7 +167,7 @@ class _ExamScreenState extends State<ExamScreen> {
     final progress = (currentIndex + 1) / examQuestions.length;
     final bool isLastQuestion = currentIndex == examQuestions.length - 1;
     final bool hasAnswered = answers.containsKey(currentQ.id);
-    final bool isTimeLow = secondsRemaining < 300;
+    final bool isTimeLow = secondsRemaining < 60;
 
     return Scaffold(
       appBar: AppBar(
@@ -277,7 +277,7 @@ class _ExamScreenState extends State<ExamScreen> {
                   children: [
                     Text(
                       'Pregunta ${currentIndex + 1} de ${examQuestions.length}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     const SizedBox(height: 14),
                     Text(
                       currentQ.text,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -316,7 +316,7 @@ class _ExamScreenState extends State<ExamScreen> {
           // Bottom navigation
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.surface,
               border: Border(
                 top: BorderSide(color: AppColors.cardBorder, width: 2),
@@ -461,7 +461,10 @@ class _OptionTileState extends State<_OptionTile> {
                   widget.text,
                   style: TextStyle(
                     fontSize: 15,
-                    color: AppColors.textPrimary,
+                    color:
+                        widget.isSelected
+                            ? AppColors.background
+                            : AppColors.textPrimary,
                     fontWeight:
                         widget.isSelected ? FontWeight.w600 : FontWeight.normal,
                     height: 1.4,
@@ -511,7 +514,7 @@ class _ResultsScreenState extends State<ResultsScreen>
   void initState() {
     super.initState();
 
-    final bool passed = widget.totalCorrect >= 6;
+    final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
 
     _scoreController = AnimationController(
       vsync: this,
@@ -575,7 +578,7 @@ class _ResultsScreenState extends State<ResultsScreen>
       final result = ExamResult(
         correctAnswers: widget.totalCorrect,
         totalQuestions: widget.totalQuestions,
-        passed: widget.totalCorrect >= 6,
+        passed: widget.totalCorrect >= EXAM_PASSING_SCORE,
         timeSpentSeconds: widget.timeSpentSeconds,
         date: DateTime.now(),
       );
@@ -609,7 +612,7 @@ class _ResultsScreenState extends State<ResultsScreen>
       if (hasRequestedReview) return;
 
       // Only show if user passed the exam
-      final bool passed = widget.totalCorrect >= 6;
+      final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
       if (!passed) return;
 
       // Check if user has completed 3+ exams
@@ -637,7 +640,7 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bool passed = widget.totalCorrect >= 6;
+    final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
     final double percentage = widget.totalCorrect / widget.totalQuestions;
     final Color accentColor = passed ? AppColors.primary : AppColors.red;
 
@@ -684,7 +687,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                             ),
                             Text(
                               '${widget.totalCorrect}/${widget.totalQuestions}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w600,
@@ -726,7 +729,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                       passed
                           ? 'Aprobaste el examen de práctica.\n¡Estás listo para el examen real!'
                           : 'Necesitas al menos 6 respuestas correctas\npara aprobar. ¡Tú puedes!',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,
                         height: 1.5,
