@@ -1,7 +1,13 @@
 import 'package:examen_vial_edomex_app_2025/models/option.dart';
-import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
+import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
+import 'package:examen_vial_edomex_app_2025/screens/review_screen.dart';
+import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
+import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
+import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
+import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:share_plus/share_plus.dart';
 import 'dart:async';
 
 class QuestionWithOptions {
@@ -22,27 +28,21 @@ class ExamScreen extends StatefulWidget {
 
 class _ExamScreenState extends State<ExamScreen> {
   List<QuestionWithOptions> examQuestions = [];
-  Map<int, int> answers = {}; // questionId : optionId
+  Map<int, int> answers = {};
   int currentIndex = 0;
-  int totalCorrect = 0;
-  List<Option> options = [];
-  late Question currentQ;
 
   late Timer timer;
-  int secondsRemaining = 30 * 60; // 30 minutos
-
-  BannerAd? _bannerAd;
-  bool _isBannerAdReady = false;
+  int secondsRemaining = 5 * 60;
 
   @override
   void initState() {
     super.initState();
 
-    List<Question> questions = List.from(widget.allQuestions)..shuffle();
-    questions = questions.take(10).toList();
+    List<Question> qs = List.from(widget.allQuestions)..shuffle();
+    qs = qs.take(10).toList();
 
     examQuestions =
-        questions
+        qs
             .map(
               (q) => QuestionWithOptions(
                 question: q,
@@ -51,34 +51,18 @@ class _ExamScreenState extends State<ExamScreen> {
             )
             .toList();
 
-    // Iniciar cronómetro
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (secondsRemaining == 0) {
         _finishExam();
       } else {
-        setState(() {
-          secondsRemaining--;
-        });
+        setState(() => secondsRemaining--);
       }
-    });
-
-    // Cargar banner publicitario
-    _loadBannerAd();
-  }
-
-  void _loadBannerAd() {
-    _bannerAd = AdMobService.createBannerAd();
-    _bannerAd!.load().then((_) {
-      setState(() {
-        _isBannerAdReady = true;
-      });
     });
   }
 
   @override
   void dispose() {
     timer.cancel();
-    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -90,212 +74,669 @@ class _ExamScreenState extends State<ExamScreen> {
 
   void _finishExam() {
     timer.cancel();
-
-    totalCorrect = 0;
+    int totalCorrect = 0;
     for (var q in examQuestions) {
       if (answers[q.question.id] == q.question.correctOptionId) {
         totalCorrect++;
       }
     }
 
+    final int timeSpent = (30 * 60) - secondsRemaining;
+
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder:
-            (_) => ResultsScreen(
+      PageRouteBuilder(
+        pageBuilder:
+            (_, __, ___) => ResultsScreen(
               totalCorrect: totalCorrect,
               totalQuestions: examQuestions.length,
+              timeSpentSeconds: timeSpent,
+              examQuestions: examQuestions,
+              answers: Map.from(answers),
             ),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 400),
       ),
     );
   }
 
   String _formatTime(int seconds) {
-    int minutes = seconds ~/ 60;
+    int min = seconds ~/ 60;
     int sec = seconds % 60;
-    return "${minutes.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}";
+    return "${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}";
+  }
+
+  void _showExitDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: AppColors.orange),
+                SizedBox(width: 10),
+                Text(
+                  '¿Salir del examen?',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ],
+            ),
+            content: const Text(
+              'Perderás todo tu progreso actual.',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  timer.cancel();
+                  Navigator.pop(ctx);
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Salir',
+                  style: TextStyle(color: AppColors.red),
+                ),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    currentQ = examQuestions[currentIndex].question;
-    options = examQuestions[currentIndex].options;
+    final currentQ = examQuestions[currentIndex].question;
+    final options = examQuestions[currentIndex].options;
+    final progress = (currentIndex + 1) / examQuestions.length;
+    final bool isLastQuestion = currentIndex == examQuestions.length - 1;
+    final bool hasAnswered = answers.containsKey(currentQ.id);
+    final bool isTimeLow = secondsRemaining < 300;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text("Examen de manejo"),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Center(
-              child: Text(
-                _formatTime(secondsRemaining),
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,
-                ),
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded),
+          onPressed: _showExitDialog,
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: progress),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOutCubic,
+                builder:
+                    (context, value, _) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: value,
+                        minHeight: 14,
+                        backgroundColor: AppColors.progressTrack,
+                        valueColor: const AlwaysStoppedAnimation(
+                          AppColors.primary,
+                        ),
+                      ),
+                    ),
               ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color:
+                  isTimeLow
+                      ? AppColors.red.withValues(alpha: 0.12)
+                      : AppColors.orange.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: 18,
+                  color: isTimeLow ? AppColors.red : AppColors.orange,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  _formatTime(secondsRemaining),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: isTimeLow ? AppColors.red : AppColors.orange,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
       body: Column(
         children: [
+          // Step dots (question progress indicators)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(examQuestions.length, (i) {
+                final bool isCurrent = i == currentIndex;
+                final bool isAnswered = answers.containsKey(
+                  examQuestions[i].question.id,
+                );
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: isCurrent ? 28 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color:
+                        isCurrent
+                            ? AppColors.secondary
+                            : isAnswered
+                            ? AppColors.primary
+                            : AppColors.progressTrack,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                );
+              }),
+            ),
+          ),
+
+          // Question content
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  LinearProgressIndicator(
-                    value: (currentIndex + 1) / examQuestions.length,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.blueAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 12.0),
-                  Text(
-                    "Pregunta ${currentIndex + 1} de ${examQuestions.length}",
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    currentQ.text,
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  const SizedBox(height: 20),
-                  ...options.map(
-                    (o) => Card(
-                      color:
-                          answers[currentQ.id] == o.id
-                              ? Colors.blueAccent
-                              : const Color(0xFF1E1E1E),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              child: SingleChildScrollView(
+                key: ValueKey(currentIndex),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pregunta ${currentIndex + 1} de ${examQuestions.length}',
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: ListTile(
-                        title: Text(
-                          o.text.replaceAll('[br]', '\n'),
-                          style: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      currentQ.text,
+                      style: const TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Option tiles
+                    ...options.map((o) {
+                      final bool isSelected = answers[currentQ.id] == o.id;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _OptionTile(
+                          text: o.text.replaceAll('[br]', '\n'),
+                          isSelected: isSelected,
+                          onTap: () => _selectAnswer(currentQ.id, o.id),
                         ),
-                        onTap: () => _selectAnswer(currentQ.id, o.id),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom navigation
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                top: BorderSide(color: AppColors.cardBorder, width: 2),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  if (currentIndex > 0)
+                    Expanded(
+                      child: DuoButton(
+                        text: 'Anterior',
+                        outlined: true,
+                        color: AppColors.secondary,
+                        onPressed: () => setState(() => currentIndex--),
                       ),
-                    ),
+                    )
+                  else
+                    const Expanded(child: SizedBox()),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child:
+                        isLastQuestion
+                            ? DuoButton(
+                              text: 'Finalizar',
+                              color: AppColors.primary,
+                              icon: Icons.check_rounded,
+                              onPressed: _finishExam,
+                            )
+                            : DuoButton(
+                              text: 'Siguiente',
+                              color:
+                                  hasAnswered
+                                      ? AppColors.primary
+                                      : AppColors.cardBorder,
+                              onPressed: () => setState(() => currentIndex++),
+                            ),
                   ),
                 ],
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (currentIndex > 0)
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        currentIndex--;
-                      });
-                    },
-                    child: const Text("Anterior"),
-                  ),
-                if (currentIndex < examQuestions.length - 1)
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        currentIndex++;
-                      });
-                    },
-                    child: const Text("Siguiente"),
-                  )
-                else
-                  ElevatedButton(
-                    onPressed: _finishExam,
-                    child: const Text("Finalizar"),
-                  ),
-              ],
-            ),
-          ),
-          // Banner publicitario
-          if (_isBannerAdReady && _bannerAd != null)
-            Container(
-              alignment: Alignment.center,
-              width: _bannerAd!.size.width.toDouble(),
-              height: _bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: _bannerAd!),
-            ),
+          const AdBannerWidget(),
         ],
       ),
     );
   }
 }
 
-// ======= RESULTADOS ========
-class ResultsScreen extends StatelessWidget {
+// ─── Option Tile with 3D press & selection effect ───────────────────────────
+
+class _OptionTile extends StatefulWidget {
+  final String text;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _OptionTile({
+    required this.text,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_OptionTile> createState() => _OptionTileState();
+}
+
+class _OptionTileState extends State<_OptionTile> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color borderColor =
+        widget.isSelected ? AppColors.secondary : AppColors.cardBorder;
+    final Color bgColor =
+        widget.isSelected
+            ? AppColors.secondary.withValues(alpha: 0.08)
+            : AppColors.surface;
+    final Color bottomColor =
+        widget.isSelected
+            ? AppColors.darken(AppColors.secondary, 0.15)
+            : AppColors.darken(AppColors.cardBorder, 0.08);
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        SoundService().playTap();
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        margin: EdgeInsets.only(top: _isPressed ? 3 : 0),
+        padding: EdgeInsets.only(bottom: _isPressed ? 0 : 3),
+        decoration: BoxDecoration(
+          color: bottomColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 2),
+          ),
+          child: Row(
+            children: [
+              // Radio indicator
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      widget.isSelected
+                          ? AppColors.secondary
+                          : Colors.transparent,
+                  border: Border.all(
+                    color:
+                        widget.isSelected
+                            ? AppColors.secondary
+                            : AppColors.textLight,
+                    width: 2.5,
+                  ),
+                ),
+                child:
+                    widget.isSelected
+                        ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        )
+                        : null,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  widget.text,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary,
+                    fontWeight:
+                        widget.isSelected ? FontWeight.w600 : FontWeight.normal,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESULTS SCREEN
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class ResultsScreen extends StatefulWidget {
   final int totalCorrect;
   final int totalQuestions;
+  final int timeSpentSeconds;
+  final List<QuestionWithOptions> examQuestions;
+  final Map<int, int> answers;
 
   const ResultsScreen({
     super.key,
     required this.totalCorrect,
     required this.totalQuestions,
+    required this.timeSpentSeconds,
+    required this.examQuestions,
+    required this.answers,
   });
 
   @override
+  State<ResultsScreen> createState() => _ResultsScreenState();
+}
+
+class _ResultsScreenState extends State<ResultsScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _scoreController;
+  late AnimationController _bounceController;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final bool passed = widget.totalCorrect >= 6;
+
+    _scoreController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _bounceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _bounceAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
+    );
+
+    _scoreController.forward();
+
+    // Save result to database
+    _saveResult();
+
+    // Play sound after score animation starts
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) {
+        if (passed) {
+          SoundService().playSuccess();
+        } else {
+          SoundService().playFail();
+        }
+      }
+    });
+
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) _bounceController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scoreController.dispose();
+    _bounceController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveResult() async {
+    try {
+      final result = ExamResult(
+        correctAnswers: widget.totalCorrect,
+        totalQuestions: widget.totalQuestions,
+        passed: widget.totalCorrect >= 8,
+        timeSpentSeconds: widget.timeSpentSeconds,
+        date: DateTime.now(),
+      );
+      await DatabaseService().insertExamResult(result);
+
+      // Auto-save failed questions to favorites
+      final failedIds = <int>[];
+      for (var q in widget.examQuestions) {
+        final selectedId = widget.answers[q.question.id];
+        if (selectedId == null || selectedId != q.question.correctOptionId) {
+          failedIds.add(q.question.id);
+        }
+      }
+      if (failedIds.isNotEmpty) {
+        await DatabaseService().saveFailedQuestions(failedIds);
+      }
+    } catch (e) {
+      // Fail silently — don't interrupt the results view
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool passed = totalCorrect >= 10;
+    final bool passed = widget.totalCorrect >= 8;
+    final double percentage = widget.totalCorrect / widget.totalQuestions;
+    final Color accentColor = passed ? AppColors.primary : AppColors.red;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      body: Center(
+      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Card(
-            color: const Color(0xFF1E1E1E),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    passed ? Icons.check_circle : Icons.cancel,
-                    size: 80,
-                    color: passed ? Colors.green : Colors.red,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    passed ? "¡Aprobado!" : "No aprobado",
-                    style: TextStyle(
-                      color: passed ? Colors.green : Colors.red,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+
+              // Animated score circle
+              AnimatedBuilder(
+                animation: _scoreController,
+                builder: (context, child) {
+                  final animatedValue = _scoreController.value * percentage;
+                  return SizedBox(
+                    width: 180,
+                    height: 180,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 180,
+                          height: 180,
+                          child: CircularProgressIndicator(
+                            value: animatedValue,
+                            strokeWidth: 14,
+                            backgroundColor: AppColors.progressTrack,
+                            valueColor: AlwaysStoppedAnimation(accentColor),
+                            strokeCap: StrokeCap.round,
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${(animatedValue * 100).round()}%',
+                              style: TextStyle(
+                                fontSize: 44,
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
+                            ),
+                            Text(
+                              '${widget.totalCorrect}/${widget.totalQuestions}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Respondiste $totalCorrect de $totalQuestions preguntas correctamente.",
-                    style: const TextStyle(color: Colors.white70, fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Volver al inicio"),
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
+
+              const SizedBox(height: 36),
+
+              // Result text with bounce
+              ScaleTransition(
+                scale: _bounceAnimation,
+                child: Column(
+                  children: [
+                    Icon(
+                      passed
+                          ? Icons.emoji_events_rounded
+                          : Icons.sentiment_dissatisfied_rounded,
+                      size: 60,
+                      color: accentColor,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      passed ? '¡Felicidades! 🎉' : 'Sigue practicando 💪',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      passed
+                          ? 'Aprobaste el examen de práctica.\n¡Estás listo para el examen real!'
+                          : 'Necesitas al menos 6 respuestas correctas\npara aprobar. ¡Tú puedes!',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSecondary,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+
+              const Spacer(flex: 3),
+
+              // Share button
+              DuoButton(
+                text: 'Compartir resultado',
+                color: AppColors.purple,
+                icon: Icons.share_rounded,
+                onPressed: () {
+                  SoundService().playTap();
+                  final score =
+                      '${widget.totalCorrect}/${widget.totalQuestions}';
+                  final pct = '${(percentage * 100).round()}%';
+                  final emoji = passed ? '✅' : '💪';
+                  final status = passed ? '¡Aprobé' : 'Obtuve $pct en';
+                  final text =
+                      '$status mi examen de práctica vial EdoMex con $score $emoji 🚗\n\n'
+                      'Prepárate para tu examen de manejo con esta app:\n'
+                      'https://play.google.com/store/apps/details?id=com.jovannyramirez.examen_vial_edomex_app_2025';
+                  SharePlus.instance.share(ShareParams(text: text));
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Review button
+              DuoButton(
+                text: 'Revisar respuestas',
+                color: AppColors.secondary,
+                icon: Icons.rate_review_rounded,
+                onPressed: () {
+                  SoundService().playTap();
+                  final reviewItems =
+                      widget.examQuestions.map((qwo) {
+                        return ReviewItem(
+                          question: qwo.question,
+                          options: qwo.options,
+                          selectedOptionId: widget.answers[qwo.question.id],
+                        );
+                      }).toList();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ReviewScreen(
+                            items: reviewItems,
+                            totalCorrect: widget.totalCorrect,
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Back button
+              DuoButton(
+                text: 'Volver al inicio',
+                color: accentColor,
+                icon: Icons.home_rounded,
+                onPressed: () => Navigator.pop(context),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),

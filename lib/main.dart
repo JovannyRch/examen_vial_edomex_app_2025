@@ -1,10 +1,22 @@
 import 'package:examen_vial_edomex_app_2025/screens/home_screen.dart';
 import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
+import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
+import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
   await AdMobService.initialize();
+  await SoundService().initialize();
+  await NotificationService().initialize();
   runApp(const MyApp());
 }
 
@@ -15,8 +27,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Examen EdoMéx',
-      home: HomeScreen(),
+      title: 'Examen Vial EdoMéx',
+      theme: AppTheme.theme,
+      home: const HomeScreen(),
     );
   }
 }
