@@ -1,9 +1,10 @@
-import 'package:my_quiz_app/models/option.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
-import 'package:my_quiz_app/widgets/duo_button.dart';
+import 'package:exani/models/option.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/ad_banner_widget.dart';
+import 'package:exani/widgets/content_image.dart';
+import 'package:exani/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 
 class GuideScreen extends StatefulWidget {
@@ -174,12 +175,10 @@ class _GuideScreenState extends State<GuideScreen> {
                       const SizedBox(height: 20),
 
                       // Image if exists
-                      if (q.imagePath != null) ...[
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(q.imagePath!, height: 140),
-                          ),
+                      if (q.hasImages) ...[
+                        ContentImageGallery(
+                          images: q.allStemImages,
+                          imageHeight: 160,
                         ),
                         const SizedBox(height: 20),
                       ],
@@ -243,9 +242,11 @@ class _GuideScreenState extends State<GuideScreen> {
                                   width: 2,
                                 ),
                               ),
-                              child: Text(
-                                o.text.replaceAll('[br]', '\n'),
-                                style: TextStyle(
+                              child: OptionContent(
+                                text: o.text.replaceAll('[br]', '\n'),
+                                imagePath: o.imagePath,
+                                imageHeight: 100,
+                                textStyle: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontSize: 16,
                                   height: 1.5,
@@ -253,6 +254,63 @@ class _GuideScreenState extends State<GuideScreen> {
                               ),
                             ),
                           ),
+
+                      // Explicación (si existe)
+                      if (q.explanation != null &&
+                          q.explanation!.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.secondary.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.lightbulb_rounded,
+                                    size: 18,
+                                    color: AppColors.secondary,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Explicación',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.secondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                q.explanation!,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimary,
+                                  height: 1.5,
+                                ),
+                              ),
+                              // Imágenes de la explicación
+                              if (q.hasExplanationImages) ...[
+                                const SizedBox(height: 12),
+                                ContentImageGallery(
+                                  images: q.explanationImages,
+                                  imageHeight: 140,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 );

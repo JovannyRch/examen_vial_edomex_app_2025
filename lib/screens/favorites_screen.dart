@@ -1,10 +1,10 @@
-import 'package:my_quiz_app/data/data.dart';
-import 'package:my_quiz_app/models/option.dart';
-import 'package:my_quiz_app/screens/guide_screen.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/duo_button.dart';
+import 'package:exani/data/data.dart';
+import 'package:exani/models/option.dart';
+import 'package:exani/screens/guide_screen.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 
 class FavoritesScreen extends StatefulWidget {

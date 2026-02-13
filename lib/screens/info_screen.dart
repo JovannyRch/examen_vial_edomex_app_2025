@@ -1,9 +1,9 @@
 // TODO: Reemplazar todo el contenido de esta pantalla con información
 // relevante para tu app. Usa la estructura existente como referencia
 // para secciones expandibles, costos, pasos y links externos.
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 

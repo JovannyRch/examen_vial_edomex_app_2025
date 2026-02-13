@@ -1,14 +1,15 @@
-import 'package:my_quiz_app/const/const.dart';
-import 'package:my_quiz_app/models/option.dart';
-import 'package:my_quiz_app/models/exam_result.dart';
-import 'package:my_quiz_app/screens/review_screen.dart';
-import 'package:my_quiz_app/services/admob_service.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/services/purchase_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
-import 'package:my_quiz_app/widgets/duo_button.dart';
+import 'package:exani/const/const.dart';
+import 'package:exani/models/option.dart';
+import 'package:exani/widgets/content_image.dart';
+import 'package:exani/models/exam_result.dart';
+import 'package:exani/screens/review_screen.dart';
+import 'package:exani/services/admob_service.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/services/purchase_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/ad_banner_widget.dart';
+import 'package:exani/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
@@ -293,6 +294,16 @@ class _ExamScreenState extends State<ExamScreen> {
                         height: 1.4,
                       ),
                     ),
+
+                    // Imágenes del enunciado (si existen)
+                    if (currentQ.hasImages) ...[
+                      const SizedBox(height: 16),
+                      ContentImageGallery(
+                        images: currentQ.allStemImages,
+                        imageHeight: 180,
+                      ),
+                    ],
+
                     const SizedBox(height: 24),
 
                     // Option tiles
@@ -302,6 +313,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _OptionTile(
                           text: o.text.replaceAll('[br]', '\n'),
+                          imagePath: o.imagePath,
                           isSelected: isSelected,
                           onTap: () => _selectAnswer(currentQ.id, o.id),
                         ),
@@ -371,11 +383,13 @@ class _ExamScreenState extends State<ExamScreen> {
 
 class _OptionTile extends StatefulWidget {
   final String text;
+  final String? imagePath;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _OptionTile({
     required this.text,
+    this.imagePath,
     required this.isSelected,
     required this.onTap,
   });
@@ -457,9 +471,11 @@ class _OptionTileState extends State<_OptionTile> {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  widget.text,
-                  style: TextStyle(
+                child: OptionContent(
+                  text: widget.text,
+                  imagePath: widget.imagePath,
+                  imageHeight: 70,
+                  textStyle: TextStyle(
                     fontSize: 15,
                     color:
                         widget.isSelected

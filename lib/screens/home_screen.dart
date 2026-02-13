@@ -1,20 +1,20 @@
-import 'package:my_quiz_app/const/const.dart';
-import 'package:my_quiz_app/data/data.dart';
-import 'package:my_quiz_app/screens/exam_screen.dart';
-import 'package:my_quiz_app/screens/favorites_screen.dart';
-import 'package:my_quiz_app/screens/guide_screen.dart';
-import 'package:my_quiz_app/screens/pdf_viewer_screen.dart';
-import 'package:my_quiz_app/screens/category_screen.dart';
-import 'package:my_quiz_app/screens/info_screen.dart';
-import 'package:my_quiz_app/screens/pro_screen.dart';
-import 'package:my_quiz_app/screens/progress_screen.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/services/notification_service.dart';
-import 'package:my_quiz_app/services/purchase_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/services/theme_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
+import 'package:exani/const/const.dart';
+import 'package:exani/data/data.dart';
+import 'package:exani/screens/exam_screen.dart';
+import 'package:exani/screens/favorites_screen.dart';
+import 'package:exani/screens/guide_screen.dart';
+import 'package:exani/screens/pdf_viewer_screen.dart';
+import 'package:exani/screens/category_screen.dart';
+import 'package:exani/screens/info_screen.dart';
+import 'package:exani/screens/pro_screen.dart';
+import 'package:exani/screens/progress_screen.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/services/notification_service.dart';
+import 'package:exani/services/purchase_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/services/theme_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {

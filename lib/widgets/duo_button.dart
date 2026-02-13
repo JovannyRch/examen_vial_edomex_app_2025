@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/services/sound_service.dart';
 
 /// Duolingo-style 3D button with press animation.
 /// The button has a darker bottom border that disappears on press,

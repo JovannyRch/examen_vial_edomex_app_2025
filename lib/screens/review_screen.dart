@@ -1,10 +1,11 @@
-import 'package:my_quiz_app/models/option.dart';
-import 'package:my_quiz_app/services/admob_service.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/services/purchase_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/duo_button.dart';
+import 'package:exani/models/option.dart';
+import 'package:exani/services/admob_service.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/services/purchase_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/content_image.dart';
+import 'package:exani/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -583,9 +584,11 @@ class _ReviewCardState extends State<_ReviewCard> {
                     const SizedBox(width: 10),
                   ],
                   Expanded(
-                    child: Text(
-                      opt.text.replaceAll('[br]', '\n'),
-                      style: TextStyle(
+                    child: OptionContent(
+                      text: opt.text.replaceAll('[br]', '\n'),
+                      imagePath: opt.imagePath,
+                      imageHeight: 60,
+                      textStyle: TextStyle(
                         fontSize: 13,
                         fontWeight:
                             (isCorrectOpt || isSelectedOpt)
@@ -702,6 +705,14 @@ class _ReviewCardState extends State<_ReviewCard> {
                             height: 1.5,
                           ),
                         ),
+                        // Imágenes de la explicación
+                        if (item.question.hasExplanationImages) ...[
+                          const SizedBox(height: 10),
+                          ContentImageGallery(
+                            images: item.question.explanationImages,
+                            imageHeight: 120,
+                          ),
+                        ],
                       ],
                     ),
                   ),

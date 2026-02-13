@@ -1,6 +1,6 @@
-import 'package:my_quiz_app/services/purchase_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
+import 'package:exani/services/purchase_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class ProScreen extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:my_quiz_app/models/exam_result.dart';
+import 'package:exani/models/exam_result.dart';
 
 /// Singleton service for managing the SQLite database.
 class DatabaseService {

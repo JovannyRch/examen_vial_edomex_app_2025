@@ -2,7 +2,19 @@ class Option {
   final int id;
   final String text;
 
-  Option({required this.id, required this.text});
+  /// Imagen opcional para la opción (señales de tránsito, diagramas, fórmulas, etc.)
+  /// Puede ser asset path ('assets/images/opcion_a.png') o URL remota
+  final String? imagePath;
+
+  Option({required this.id, required this.text, this.imagePath});
+
+  /// True si esta opción tiene una imagen asociada
+  bool get hasImage => imagePath != null && imagePath!.isNotEmpty;
+
+  /// True si la imagen es una URL remota (http/https)
+  bool get isRemoteImage =>
+      hasImage &&
+      (imagePath!.startsWith('http://') || imagePath!.startsWith('https://'));
 }
 
 /// Categories for practice mode — TODO: Customize for your app
@@ -20,24 +32,69 @@ enum QuestionCategory {
   const QuestionCategory(this.label, this.emoji);
 }
 
+/// Nivel de dificultad de la pregunta
+enum QuestionDifficulty {
+  easy('Fácil'),
+  medium('Media'),
+  hard('Difícil');
+
+  final String label;
+  const QuestionDifficulty(this.label);
+}
+
 class Question {
   final int id;
   final String text;
   final List<Option> options;
   final int correctOptionId;
-  final String? imagePath;
   final QuestionCategory category;
+
+  /// Imagen principal de la pregunta (señal de tránsito, diagrama, etc.)
+  /// Puede ser asset path o URL remota
+  final String? imagePath;
+
+  /// Imágenes adicionales en el enunciado (para preguntas con múltiples figuras)
+  /// Útil en EXANI: gráficas, tablas, diagramas complementarios
+  final List<String> stemImages;
+
+  /// Explicación en texto de por qué la respuesta es correcta
   final String? explanation;
+
+  /// Imágenes que acompañan la explicación (diagramas explicativos, fórmulas, etc.)
+  final List<String> explanationImages;
+
+  /// Dificultad de la pregunta (para práctica adaptativa)
+  final QuestionDifficulty difficulty;
+
+  /// Tags libres para filtrado flexible (ej: ['velocidad', 'zona_urbana'])
+  final List<String> tags;
 
   Question({
     required this.id,
     required this.text,
     required this.options,
     required this.correctOptionId,
-    this.imagePath,
     required this.category,
+    this.imagePath,
+    this.stemImages = const [],
     this.explanation,
+    this.explanationImages = const [],
+    this.difficulty = QuestionDifficulty.medium,
+    this.tags = const [],
   });
+
+  /// True si la pregunta tiene al menos una imagen (principal o adicionales)
+  bool get hasImages =>
+      (imagePath != null && imagePath!.isNotEmpty) || stemImages.isNotEmpty;
+
+  /// True si la explicación tiene imágenes asociadas
+  bool get hasExplanationImages => explanationImages.isNotEmpty;
+
+  /// Todas las imágenes del enunciado (principal + adicionales) en orden
+  List<String> get allStemImages => [
+    if (imagePath != null && imagePath!.isNotEmpty) imagePath!,
+    ...stemImages,
+  ];
 
   /// Devuelve las opciones en desorden, incluyendo siempre la correcta
   List<Option> getShuffledOptions({int maxOptions = 4}) {

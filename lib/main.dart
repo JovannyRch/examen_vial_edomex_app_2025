@@ -1,10 +1,11 @@
-import 'package:my_quiz_app/screens/home_screen.dart';
-import 'package:my_quiz_app/services/admob_service.dart';
-import 'package:my_quiz_app/services/notification_service.dart';
-import 'package:my_quiz_app/services/purchase_service.dart';
-import 'package:my_quiz_app/services/sound_service.dart';
-import 'package:my_quiz_app/services/theme_service.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
+import 'package:exani/screens/auth_gate.dart';
+import 'package:exani/services/admob_service.dart';
+import 'package:exani/services/notification_service.dart';
+import 'package:exani/services/purchase_service.dart';
+import 'package:exani/services/sound_service.dart';
+import 'package:exani/services/supabase_service.dart';
+import 'package:exani/services/theme_service.dart';
+import 'package:exani/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,8 +17,9 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  await SupabaseService().initialize();
   await ThemeService().initialize();
-  await AdMobService.initialize();
+  // await AdMobService.initialize(); // TODO: Configurar AdMob ID real
   await SoundService().initialize();
   await NotificationService().initialize();
   await PurchaseService().initialize();
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: mode,
-          home: const HomeScreen(),
+          home: const AuthGate(),
         );
       },
     );

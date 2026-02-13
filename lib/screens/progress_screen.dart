@@ -1,8 +1,8 @@
-import 'package:my_quiz_app/models/exam_result.dart';
-import 'package:my_quiz_app/services/database_service.dart';
-import 'package:my_quiz_app/const/const.dart';
-import 'package:my_quiz_app/theme/app_theme.dart';
-import 'package:my_quiz_app/widgets/ad_banner_widget.dart';
+import 'package:exani/models/exam_result.dart';
+import 'package:exani/services/database_service.dart';
+import 'package:exani/const/const.dart';
+import 'package:exani/theme/app_theme.dart';
+import 'package:exani/widgets/ad_banner_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

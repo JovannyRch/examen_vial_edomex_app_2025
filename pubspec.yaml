@@ -1,4 +1,4 @@
-name: my_quiz_app
+name: exani
 description: "Quiz/Exam app built with Flutter — template base."
 
 version: 1.0.0+1
@@ -27,6 +27,7 @@ dependencies:
   share_plus: ^12.0.1
   in_app_review: ^2.0.11
   in_app_purchase: ^3.2.3
+  supabase_flutter: ^2.12.0
 
 dev_dependencies:
   flutter_test:

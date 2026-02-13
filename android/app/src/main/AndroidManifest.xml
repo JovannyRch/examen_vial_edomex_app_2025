@@ -8,13 +8,23 @@
   <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
   <uses-permission android:name="com.android.vending.BILLING" />
   <application
-        android:label="Mi App"
+        android:label="exani"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
     <!-- AdMob App ID — TODO: Reemplazar con tu ID -->
+    <!-- Comentado temporalmente para evitar crash -->
+    <!--
     <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"/>
+    -->
+    <!-- Deshabilitar AdMob ContentProvider temporalmente -->
+    <provider
+            android:name="com.google.android.gms.ads.MobileAdsInitProvider"
+            android:authorities="${applicationId}.mobileadsinitprovider"
+            android:enabled="false"
+            android:exported="false"
+            tools:node="remove" />
     <activity
             android:name=".MainActivity"
             android:exported="true"
