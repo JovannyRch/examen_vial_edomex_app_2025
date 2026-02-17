@@ -12,21 +12,18 @@ Incluye la guía oficial con preguntas y un simulador de examen con cronómetro,
 ## 🚀 Características
 
 - 📘 **Guía de estudio**
-
   - Todas las preguntas de la guía oficial (54).
   - Preguntas con texto e imágenes (señales de tránsito).
   - Swipe horizontal tipo _PageView_ para pasar entre preguntas.
   - Respuesta correcta resaltada.
 
 - 📝 **Simulador de examen**
-
   - 10 preguntas aleatorias de la guía.
   - Opciones en desorden.
   - Cronómetro de **30 minutos** ⏱.
   - Resultados al final: número de aciertos y si aprobaste (mínimo 8 correctas).
 
 - 🎨 **Diseño moderno en modo oscuro**
-
   - UI minimalista con tarjetas y acentos de color.
   - Pensada para usabilidad y enfoque en el estudio.
 
@@ -86,8 +83,8 @@ assets/screenshots/guide.png
 
 - [x] Pantalla de guía de estudio (con swipe).
 - [x] Pantalla de examen con cronómetro y resultados.
-- [ ] Estadísticas e historial de intentos.
-- [ ] Configuración (tema, reinicio de progreso).
+- [x] Estadísticas e historial de intentos.
+- [x] Configuración (tema, reinicio de progreso).
 - [ ] Soporte multilenguaje (español/inglés).
 
 ---

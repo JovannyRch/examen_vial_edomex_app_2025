@@ -20,6 +20,12 @@ import 'package:flutter/material.dart';
 
 var allQuestions = [...questions, ...trafficSignsQuestions];
 
+// Lista para el examen oficial con más peso de preguntas del data.dart original
+final officialExamQuestions = [
+  ...questions, // Todas las preguntas originales (62)
+  ...trafficSignsQuestions.take(25), // Solo 25 de las señales de tránsito
+];
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -639,7 +645,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           context,
                           _slideRoute(
                             ExamScreen(
-                              allQuestions: allQuestions,
+                              allQuestions: officialExamQuestions,
                               isFullExam: false,
                             ),
                           ),
