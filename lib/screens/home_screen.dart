@@ -18,6 +18,8 @@ import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 
+var allQuestions = [...questions, ...trafficSignsQuestions];
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -191,11 +193,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       color: AppColors.secondary,
                       title: 'Guía de Estudio',
                       subtitle:
-                          'Aprende las ${questions.length} preguntas con sus respuestas',
+                          'Aprende las ${allQuestions.length} preguntas con sus respuestas',
                       onTap:
                           () => Navigator.push(
                             context,
-                            _slideRoute(GuideScreen(allQuestions: questions)),
+                            _slideRoute(
+                              GuideScreen(
+                                allQuestions: allQuestions..shuffle(),
+                              ),
+                            ),
                           ).then((_) => _loadStats()),
                     ),
                     const SizedBox(height: 12),
@@ -543,11 +549,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // ─── Exam Type Selection Bottom Sheet ──────────────────────────────────────
 
   void _showExamTypeDialog() {
-    var allQuestions = [...questions, ...trafficSignsQuestions];
-
-    allQuestions.shuffle();
-    allQuestions = allQuestions.take(50).toList();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -652,9 +653,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       icon: Icons.library_books_rounded,
                       color: AppColors.secondary,
                       title: 'Examen Completo',
-                      subtitle: 'Todas las preguntas de la guía',
+                      subtitle: 'La mayoría de las preguntas de la guía',
                       features: [
-                        '✓ ${allQuestions.length} preguntas',
+                        '✓ 50 preguntas',
                         '✓ 60 minutos de duración',
                         '✓ Mínimo 70% para aprobar',
                       ],

@@ -56,7 +56,7 @@ class _ExamScreenState extends State<ExamScreen> {
 
     // Configure exam based on type
     if (widget.isFullExam) {
-      questionsCount = widget.allQuestions.length;
+      questionsCount = 50;
       totalDurationSeconds = FULL_EXAM_DURATION_MINUTES * 60;
       passingPercentage = FULL_EXAM_PASSING_PERCENTAGE;
     } else {

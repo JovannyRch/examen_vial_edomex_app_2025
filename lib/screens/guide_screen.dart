@@ -302,6 +302,13 @@ class _GuideScreenState extends State<GuideScreen> {
                               ),
                             ),
                           ),
+
+                      // Expandable explanation section (if exists)
+                      if (q.explanation != null &&
+                          q.explanation!.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _ExpandableExplanation(explanation: q.explanation!),
+                      ],
                     ],
                   ),
                 );
@@ -358,6 +365,145 @@ class _GuideScreenState extends State<GuideScreen> {
           const AdBannerWidget(),
         ],
       ),
+    );
+  }
+}
+
+// ─── Expandable Explanation Widget ─────────────────────────────────────────
+
+class _ExpandableExplanation extends StatefulWidget {
+  final String explanation;
+
+  const _ExpandableExplanation({required this.explanation});
+
+  @override
+  State<_ExpandableExplanation> createState() => _ExpandableExplanationState();
+}
+
+class _ExpandableExplanationState extends State<_ExpandableExplanation>
+    with SingleTickerProviderStateMixin {
+  bool _isExpanded = false;
+  late AnimationController _controller;
+  late Animation<double> _expandAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _expandAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggleExpanded() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+    SoundService().playTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Expandable header button
+        InkWell(
+          onTap: _toggleExpanded,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppColors.secondary.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: const Icon(
+                    Icons.lightbulb_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    _isExpanded ? 'Ocultar explicación' : 'Ver explicación',
+                    style: const TextStyle(
+                      color: AppColors.secondary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.secondary,
+                    size: 24,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Expandable content
+        SizeTransition(
+          sizeFactor: _expandAnimation,
+          axisAlignment: -1.0,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.secondary.withValues(alpha: 0.25),
+                  width: 2,
+                ),
+              ),
+              child: Text(
+                widget.explanation.replaceAll('[br]', '\n'),
+                style: TextStyle(
+                  color: AppColors.textPrimary(context),
+                  fontSize: 15,
+                  height: 1.6,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
