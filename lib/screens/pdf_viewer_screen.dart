@@ -135,7 +135,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   value: progress,
                   strokeWidth: 3,
                   color: AppColors.primary,
-                  backgroundColor: AppColors.progressTrack,
+                  backgroundColor: AppColors.progressTrack(context),
                 ),
               ),
             )
@@ -153,7 +153,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                     color:
                         downloadComplete
                             ? AppColors.primary
-                            : AppColors.textPrimary,
+                            : AppColors.textPrimary(context),
                   ),
                 ),
                 onPressed: _downloadPdf,

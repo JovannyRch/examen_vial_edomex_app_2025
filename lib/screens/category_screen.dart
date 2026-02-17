@@ -237,9 +237,9 @@ class _CategoryCardState extends State<_CategoryCard> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.cardBorder, width: 2),
+            border: Border.all(color: AppColors.cardBorder(context), width: 2),
           ),
           child: Row(
             children: [
@@ -269,7 +269,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -277,7 +277,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                       '${widget.questionCount} preguntas',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                       ),
                     ),
                   ],

@@ -97,7 +97,7 @@ class _DuoButtonState extends State<DuoButton> {
         margin: EdgeInsets.only(top: topMargin),
         padding: EdgeInsets.only(bottom: bottomPad),
         decoration: BoxDecoration(
-          color: AppColors.cardBorder,
+          color: AppColors.cardBorder(context),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Container(
@@ -105,7 +105,7 @@ class _DuoButtonState extends State<DuoButton> {
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder, width: 2),
+            border: Border.all(color: AppColors.cardBorder(context), width: 2),
           ),
           child: _buildContent(widget.color),
         ),

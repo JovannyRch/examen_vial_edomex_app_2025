@@ -130,7 +130,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
             const SizedBox(height: 12),
@@ -138,7 +138,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               'Realiza tu primer examen simulado\npara comenzar a ver tu progreso aquí.',
               style: TextStyle(
                 fontSize: 15,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondary(context),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -163,7 +163,7 @@ class _ProgressScreenState extends State<ProgressScreen>
           colors:
               hasStreak
                   ? [AppColors.orange, const Color(0xFFFFB347)]
-                  : [AppColors.cardBorder, AppColors.cardBorder],
+                  : [AppColors.cardBorder(context), AppColors.cardBorder(context)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -194,7 +194,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
-                    color: hasStreak ? Colors.white : AppColors.textSecondary,
+                    color: hasStreak ? Colors.white : AppColors.textSecondary(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -207,7 +207,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                     color:
                         hasStreak
                             ? Colors.white.withValues(alpha: 0.85)
-                            : AppColors.textLight,
+                            : AppColors.textLight(context),
                   ),
                 ),
               ],
@@ -283,22 +283,22 @@ class _ProgressScreenState extends State<ProgressScreen>
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.cardBorder, width: 2),
+          border: Border.all(color: AppColors.cardBorder(context), width: 2),
         ),
         child: Column(
           children: [
             Icon(
               Icons.show_chart_rounded,
               size: 40,
-              color: AppColors.textLight,
+              color: AppColors.textLight(context),
             ),
             const SizedBox(height: 12),
             Text(
               'Necesitas al menos 2 exámenes\npara ver la gráfica de evolución',
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondary(context),
                 fontSize: 14,
                 height: 1.4,
               ),
@@ -318,9 +318,9 @@ class _ProgressScreenState extends State<ProgressScreen>
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(12, 20, 20, 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder, width: 2),
+        border: Border.all(color: AppColors.cardBorder(context), width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +332,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
           ),
@@ -349,7 +349,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                   drawVerticalLine: false,
                   getDrawingHorizontalLine:
                       (value) =>
-                          FlLine(color: AppColors.cardBorder, strokeWidth: 1),
+                          FlLine(color: AppColors.cardBorder(context), strokeWidth: 1),
                 ),
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
@@ -368,7 +368,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         return Text(
                           '${value.toInt()}%',
                           style: TextStyle(
-                            color: AppColors.textLight,
+                            color: AppColors.textLight(context),
                             fontSize: 11,
                           ),
                         );
@@ -391,7 +391,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         return Text(
                           '#${idx + 1}',
                           style: TextStyle(
-                            color: AppColors.textLight,
+                            color: AppColors.textLight(context),
                             fontSize: 10,
                           ),
                         );
@@ -415,7 +415,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                           radius: 4,
                           color: isPassed ? AppColors.primary : AppColors.red,
                           strokeWidth: 2,
-                          strokeColor: AppColors.surface,
+                          strokeColor: AppColors.surface(context),
                         );
                       },
                     ),
@@ -442,7 +442,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                 ],
                 lineTouchData: LineTouchData(
                   touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (spot) => AppColors.textPrimary,
+                    getTooltipColor: (spot) => AppColors.textPrimary(context),
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
                         if (spot.barIndex == 1)
@@ -480,7 +480,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               const SizedBox(width: 6),
               Text(
                 'Línea de aprobación (${EXAM_PASSING_PERCENTAGE.round()}%)',
-                style: TextStyle(color: AppColors.textLight, fontSize: 11),
+                style: TextStyle(color: AppColors.textLight(context), fontSize: 11),
               ),
             ],
           ),
@@ -503,7 +503,7 @@ class _ProgressScreenState extends State<ProgressScreen>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimary(context),
           ),
         ),
         const SizedBox(height: 12),
@@ -516,9 +516,9 @@ class _ProgressScreenState extends State<ProgressScreen>
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.cardBorder, width: 2),
+              border: Border.all(color: AppColors.cardBorder(context), width: 2),
             ),
             child: Row(
               children: [
@@ -552,7 +552,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimary(context),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -560,7 +560,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         '${timeMin}m ${timeSec}s  •  ${_formatDate(r.date)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondary(context),
                         ),
                       ),
                     ],
@@ -614,9 +614,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder, width: 2),
+        border: Border.all(color: AppColors.cardBorder(context), width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,7 +642,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context)),
           ),
         ],
       ),

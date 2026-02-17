@@ -5,6 +5,7 @@ import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class GuideScreen extends StatefulWidget {
   final List<Question> allQuestions;
@@ -91,7 +92,7 @@ class _GuideScreenState extends State<GuideScreen> {
                       child: LinearProgressIndicator(
                         value: value,
                         minHeight: 14,
-                        backgroundColor: AppColors.progressTrack,
+                        backgroundColor: AppColors.progressTrack(context),
                         valueColor: const AlwaysStoppedAnimation(
                           AppColors.secondary,
                         ),
@@ -105,7 +106,7 @@ class _GuideScreenState extends State<GuideScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondary(context),
               ),
             ),
           ],
@@ -164,7 +165,7 @@ class _GuideScreenState extends State<GuideScreen> {
                                 color:
                                     _favoriteIds.contains(q.id)
                                         ? AppColors.orange
-                                        : AppColors.textLight,
+                                        : AppColors.textLight(context),
                                 size: 28,
                               ),
                             ),
@@ -178,7 +179,55 @@ class _GuideScreenState extends State<GuideScreen> {
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(q.imagePath!, height: 140),
+                            child: CachedNetworkImage(
+                              imageUrl: q.imagePath!,
+                              height: 140,
+                              fit: BoxFit.cover,
+                              placeholder:
+                                  (context, url) => Container(
+                                    height: 140,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.progressTrack(context),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation(
+                                          AppColors.secondary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              errorWidget:
+                                  (context, url, error) => Container(
+                                    height: 140,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.progressTrack(context),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.broken_image_outlined,
+                                          size: 40,
+                                          color: AppColors.textLight(context),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Error al cargar imagen',
+                                          style: TextStyle(
+                                            color: AppColors.textSecondary(
+                                              context,
+                                            ),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -190,7 +239,7 @@ class _GuideScreenState extends State<GuideScreen> {
                         style: TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimary(context),
                           height: 1.4,
                         ),
                       ),
@@ -246,7 +295,7 @@ class _GuideScreenState extends State<GuideScreen> {
                               child: Text(
                                 o.text.replaceAll('[br]', '\n'),
                                 style: TextStyle(
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.textPrimary(context),
                                   fontSize: 16,
                                   height: 1.5,
                                 ),
@@ -264,9 +313,9 @@ class _GuideScreenState extends State<GuideScreen> {
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surface(context),
               border: Border(
-                top: BorderSide(color: AppColors.cardBorder, width: 2),
+                top: BorderSide(color: AppColors.cardBorder(context), width: 2),
               ),
             ),
             child: SafeArea(

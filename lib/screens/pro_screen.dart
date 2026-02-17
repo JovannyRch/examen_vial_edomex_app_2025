@@ -94,7 +94,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back_rounded,
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimary(context),
                         ),
                         onPressed: () {
                           SoundService().playTap();
@@ -155,7 +155,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                                   style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                                    color: AppColors.textPrimary(context),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -165,7 +165,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                                       : 'Desbloquea la experiencia completa',
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: AppColors.textSecondary,
+                                    color: AppColors.textSecondary(context),
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -225,7 +225,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                               : 'Compra única · Sin suscripciones · Acceso permanente',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textLight,
+                            color: AppColors.textLight(context),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -292,9 +292,9 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder, width: 1.5),
+          border: Border.all(color: AppColors.cardBorder(context), width: 1.5),
         ),
         child: Row(
           children: [
@@ -317,7 +317,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -325,7 +325,7 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                     subtitle,
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                 ],

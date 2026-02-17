@@ -71,7 +71,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             ),
             content: Text(
               'Se eliminarán todas las preguntas guardadas. Esta acción no se puede deshacer.',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondary(context)),
             ),
             actions: [
               TextButton(
@@ -98,7 +98,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -133,7 +133,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ? Container(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: AppColors.background(context),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.06),
@@ -192,7 +192,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
             const SizedBox(height: 12),
@@ -200,7 +200,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               'Marca preguntas con el ícono de bookmark en la guía de estudio o revisión de examen.\n\nLas preguntas que falles en exámenes se guardarán automáticamente aquí.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondary(context),
                 height: 1.6,
               ),
               textAlign: TextAlign.center,
@@ -241,9 +241,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           child: Container(
             margin: const EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.cardBorder, width: 2),
+              border: Border.all(color: AppColors.cardBorder(context), width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -308,7 +308,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimary(context),
                       height: 1.4,
                     ),
                   ),

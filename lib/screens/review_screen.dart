@@ -93,7 +93,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     final correctCount = widget.totalCorrect;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.background(context),
       body: SafeArea(
         child: Column(
           children: [
@@ -127,7 +127,7 @@ class _ReviewScreenState extends State<ReviewScreen>
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: AppColors.background(context),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.06),
@@ -164,7 +164,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -184,12 +184,12 @@ class _ReviewScreenState extends State<ReviewScreen>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.progressTrack,
+                    color: AppColors.progressTrack(context),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.arrow_back_rounded,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
               ),
@@ -200,7 +200,7 @@ class _ReviewScreenState extends State<ReviewScreen>
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
               ),
@@ -358,7 +358,7 @@ class _ReviewCardState extends State<_ReviewCard> {
       child: Container(
         margin: const EdgeInsets.only(top: 14),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: statusColor.withValues(alpha: 0.35),
@@ -412,7 +412,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimary(context),
                           height: 1.4,
                         ),
                         maxLines: _expanded ? null : 2,
@@ -446,7 +446,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                           color:
                               widget.isFavorite
                                   ? AppColors.orange
-                                  : AppColors.textLight,
+                                  : AppColors.textLight(context),
                           size: 24,
                         ),
                       ),
@@ -460,7 +460,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                       duration: const Duration(milliseconds: 300),
                       child: Icon(
                         Icons.expand_more_rounded,
-                        color: AppColors.textLight,
+                        color: AppColors.textLight(context),
                         size: 24,
                       ),
                     ),
@@ -532,7 +532,7 @@ class _ReviewCardState extends State<_ReviewCard> {
           // Divider
           Container(
             height: 1,
-            color: AppColors.progressTrack,
+            color: AppColors.progressTrack(context),
             margin: const EdgeInsets.only(bottom: 14),
           ),
 
@@ -559,7 +559,7 @@ class _ReviewCardState extends State<_ReviewCard> {
             } else {
               optBg = Colors.grey.shade50;
               optBorder = Colors.grey.shade200;
-              optText = AppColors.textSecondary;
+              optText = AppColors.textSecondary(context);
               optIcon = null;
             }
 
@@ -639,7 +639,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondary(context),
                           height: 1.4,
                         ),
                         children: [

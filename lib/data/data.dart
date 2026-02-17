@@ -19,6 +19,132 @@ final List<Question> questions = [
         'El Reglamento de Tránsito clasifica las señales en tres tipos: preventivas (advierten peligros), restrictivas (prohíben o limitan) e informativas (guían al conductor).',
   ),
   Question(
+    id: 55,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Curva-1471556454125.PNG',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 1,
+    category: QuestionCategory.senales,
+    explanation:
+        'Curva. Se utiliza para indicar curvas a la derecha o izquierda que sean de menos de 90 grados.',
+  ),
+  Question(
+    id: 56,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Curva_cerrada-1471556503017.PNG',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 1,
+    category: QuestionCategory.senales,
+    explanation:
+        'Curva cerrada. Se usa para indicar curvas a la derecha o izquierda con una curvatura mayor a 90 grados.',
+  ),
+  Question(
+    id: 57,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Bifurcaci_n-1471556825167.png',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 1,
+    category: QuestionCategory.senales,
+    explanation:
+        'Bifurcación. Advierte de la división del camino. La señal puede ser a la izquierda o a la derecha.',
+  ),
+  Question(
+    id: 58,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Alto-1471558292409.png',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 2,
+    category: QuestionCategory.senales,
+    explanation:
+        'Alto. Indica que el conductor debe detener completamente su vehículo.',
+  ),
+  Question(
+    id: 59,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Velocidad_m_xima-1471558349524.png',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 2,
+    category: QuestionCategory.senales,
+    explanation:
+        'Velocidad máxima. Este tipo de señal de tránsito indica el límite de velocidad máximo para circular.',
+  ),
+  Question(
+    id: 60,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Prohibido_rebasar-1471558378203.png',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 2,
+    category: QuestionCategory.senales,
+    explanation:
+        'No rebasar. La señal de tránsito prohíbe a los conductores rebasar en la zona.',
+  ),
+  Question(
+    id: 61,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Primeros_auxilios-1471559312063.jpg',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 3,
+    category: QuestionCategory.senales,
+    explanation: 'Primeros auxilios.',
+  ),
+  Question(
+    id: 62,
+    text: 'Selecciona el tipo de señal:',
+    imagePath:
+        'https://s3.amazonaws.com/nexu-ghost-blog/2016/Aug/Estaci_n_de_servicio-1471559335319.png',
+    options: [
+      Option(id: 1, text: "Preventivas"),
+      Option(id: 2, text: 'Restrictivas'),
+      Option(id: 3, text: 'Informativas'),
+      Option(id: 4, text: 'Decorativas'),
+    ],
+    correctOptionId: 3,
+    category: QuestionCategory.senales,
+    explanation: 'Estación de servicio.',
+  ),
+  Question(
     id: 19,
     text:
         '¿Qué deben de hacer los conductores cuando el semáforo se encuentra en luz roja?',

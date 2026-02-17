@@ -51,7 +51,7 @@ class _InfoScreenState extends State<InfoScreen>
                   IconButton(
                     icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimary(context),
                     ),
                     onPressed: () {
                       SoundService().playTap();
@@ -64,7 +64,7 @@ class _InfoScreenState extends State<InfoScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                 ],
@@ -353,7 +353,7 @@ class _InfoScreenState extends State<InfoScreen>
                                 '20 veces la UMA',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.textSecondary(context),
                                 ),
                               ),
                             ],
@@ -568,7 +568,7 @@ class _InfoScreenState extends State<InfoScreen>
               text,
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
                 height: 1.4,
               ),
             ),
@@ -600,7 +600,7 @@ class _InfoScreenState extends State<InfoScreen>
               text,
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
                 height: 1.4,
               ),
             ),
@@ -634,14 +634,14 @@ class _InfoScreenState extends State<InfoScreen>
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
               ],
@@ -672,7 +672,7 @@ class _InfoScreenState extends State<InfoScreen>
           children: [
             Text(
               label,
-              style: TextStyle(fontSize: 15, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 15, color: AppColors.textPrimary(context)),
             ),
             Text(
               price,
@@ -741,7 +741,7 @@ class _InfoScreenState extends State<InfoScreen>
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 14, color: AppColors.textPrimary(context)),
             ),
           ),
           Container(
@@ -781,7 +781,7 @@ class _InfoScreenState extends State<InfoScreen>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -789,7 +789,7 @@ class _InfoScreenState extends State<InfoScreen>
                   subtitle,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondary(context),
                     height: 1.4,
                   ),
                 ),
@@ -818,7 +818,7 @@ class _InfoScreenState extends State<InfoScreen>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -826,7 +826,7 @@ class _InfoScreenState extends State<InfoScreen>
                   subtitle,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondary(context),
                     height: 1.4,
                   ),
                 ),
@@ -842,9 +842,9 @@ class _InfoScreenState extends State<InfoScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder, width: 2),
+        border: Border.all(color: AppColors.cardBorder(context), width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -868,7 +868,7 @@ class _InfoScreenState extends State<InfoScreen>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimary(context),
                 ),
               ),
             ],
@@ -999,13 +999,13 @@ class _InfoSectionState extends State<_InfoSection>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color:
               _expanded
                   ? widget.color.withValues(alpha: 0.3)
-                  : AppColors.cardBorder,
+                  : AppColors.cardBorder(context),
           width: 1.5,
         ),
         boxShadow: [
@@ -1042,7 +1042,7 @@ class _InfoSectionState extends State<_InfoSection>
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                   ),
@@ -1051,7 +1051,7 @@ class _InfoSectionState extends State<_InfoSection>
                     duration: const Duration(milliseconds: 300),
                     child: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: _expanded ? widget.color : AppColors.textLight,
+                      color: _expanded ? widget.color : AppColors.textLight(context),
                       size: 28,
                     ),
                   ),
@@ -1098,7 +1098,7 @@ class _InfoText extends StatelessWidget {
       text,
       style: TextStyle(
         fontSize: isSmall ? 12 : 14,
-        color: isSmall ? AppColors.textSecondary : AppColors.textPrimary,
+        color: isSmall ? AppColors.textSecondary(context) : AppColors.textPrimary(context),
         height: 1.5,
       ),
     );

@@ -25,8 +25,14 @@ class QuestionWithOptions {
 
 class ExamScreen extends StatefulWidget {
   final List<Question> allQuestions;
+  final bool
+  isFullExam; // true = all questions, false = official (10 questions)
 
-  const ExamScreen({super.key, required this.allQuestions});
+  const ExamScreen({
+    super.key,
+    required this.allQuestions,
+    this.isFullExam = false,
+  });
 
   @override
   State<ExamScreen> createState() => _ExamScreenState();
@@ -38,14 +44,34 @@ class _ExamScreenState extends State<ExamScreen> {
   int currentIndex = 0;
 
   late Timer timer;
-  int secondsRemaining = EXAM_DURATION_MINUTES * 60;
+  late int secondsRemaining;
+  late int totalDurationSeconds;
+  late int questionsCount;
+  late double passingPercentage;
 
   @override
   void initState() {
     super.initState();
 
+    // Configure exam based on type
+    if (widget.isFullExam) {
+      questionsCount = widget.allQuestions.length;
+      totalDurationSeconds = FULL_EXAM_DURATION_MINUTES * 60;
+      passingPercentage = FULL_EXAM_PASSING_PERCENTAGE;
+    } else {
+      questionsCount = EXAM_TOTAL_QUESTIONS;
+      totalDurationSeconds = EXAM_DURATION_MINUTES * 60;
+      passingPercentage = EXAM_PASSING_PERCENTAGE;
+    }
+
+    secondsRemaining = totalDurationSeconds;
+
     List<Question> qs = List.from(widget.allQuestions)..shuffle();
-    qs = qs.take(EXAM_TOTAL_QUESTIONS).toList();
+
+    // Take only required number of questions (10 for official, all for full)
+    if (!widget.isFullExam) {
+      qs = qs.take(questionsCount).toList();
+    }
 
     examQuestions =
         qs
@@ -87,7 +113,7 @@ class _ExamScreenState extends State<ExamScreen> {
       }
     }
 
-    final int timeSpent = (EXAM_DURATION_MINUTES * 60) - secondsRemaining;
+    final int timeSpent = totalDurationSeconds - secondsRemaining;
 
     Navigator.pushReplacement(
       context,
@@ -99,6 +125,7 @@ class _ExamScreenState extends State<ExamScreen> {
               timeSpentSeconds: timeSpent,
               examQuestions: examQuestions,
               answers: Map.from(answers),
+              passingPercentage: passingPercentage,
             ),
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
@@ -134,14 +161,14 @@ class _ExamScreenState extends State<ExamScreen> {
             ),
             content: Text(
               'Perderás todo tu progreso actual.',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondary(context)),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(
                   'Cancelar',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondary(context)),
                 ),
               ),
               TextButton(
@@ -188,7 +215,7 @@ class _ExamScreenState extends State<ExamScreen> {
                       child: LinearProgressIndicator(
                         value: value,
                         minHeight: 14,
-                        backgroundColor: AppColors.progressTrack,
+                        backgroundColor: AppColors.progressTrack(context),
                         valueColor: const AlwaysStoppedAnimation(
                           AppColors.primary,
                         ),
@@ -234,32 +261,54 @@ class _ExamScreenState extends State<ExamScreen> {
       body: Column(
         children: [
           // Step dots (question progress indicators)
+          // For exams with 15+ questions, show numeric indicator instead
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(examQuestions.length, (i) {
-                final bool isCurrent = i == currentIndex;
-                final bool isAnswered = answers.containsKey(
-                  examQuestions[i].question.id,
-                );
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: isCurrent ? 28 : 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color:
-                        isCurrent
-                            ? AppColors.secondary
-                            : isAnswered
-                            ? AppColors.primary
-                            : AppColors.progressTrack,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                );
-              }),
-            ),
+            child:
+                examQuestions.length <= 15
+                    ? Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: List.generate(examQuestions.length, (i) {
+                        final bool isCurrent = i == currentIndex;
+                        final bool isAnswered = answers.containsKey(
+                          examQuestions[i].question.id,
+                        );
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          width: isCurrent ? 28 : 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color:
+                                isCurrent
+                                    ? AppColors.secondary
+                                    : isAnswered
+                                    ? AppColors.primary
+                                    : AppColors.progressTrack(context),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        );
+                      }),
+                    )
+                    : Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${currentIndex + 1} / ${examQuestions.length}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.secondary,
+                        ),
+                      ),
+                    ),
           ),
 
           // Question content
@@ -278,7 +327,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     Text(
                       'Pregunta ${currentIndex + 1} de ${examQuestions.length}',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -289,7 +338,7 @@ class _ExamScreenState extends State<ExamScreen> {
                       style: TextStyle(
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                         height: 1.4,
                       ),
                     ),
@@ -317,9 +366,9 @@ class _ExamScreenState extends State<ExamScreen> {
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surface(context),
               border: Border(
-                top: BorderSide(color: AppColors.cardBorder, width: 2),
+                top: BorderSide(color: AppColors.cardBorder(context), width: 2),
               ),
             ),
             child: SafeArea(
@@ -352,7 +401,7 @@ class _ExamScreenState extends State<ExamScreen> {
                               color:
                                   hasAnswered
                                       ? AppColors.primary
-                                      : AppColors.cardBorder,
+                                      : AppColors.cardBorder(context),
                               onPressed: () => setState(() => currentIndex++),
                             ),
                   ),
@@ -390,15 +439,15 @@ class _OptionTileState extends State<_OptionTile> {
   @override
   Widget build(BuildContext context) {
     final Color borderColor =
-        widget.isSelected ? AppColors.secondary : AppColors.cardBorder;
+        widget.isSelected ? AppColors.secondary : AppColors.cardBorder(context);
     final Color bgColor =
         widget.isSelected
             ? AppColors.secondary.withValues(alpha: 0.08)
-            : AppColors.surface;
+            : AppColors.surface(context);
     final Color bottomColor =
         widget.isSelected
             ? AppColors.darken(AppColors.secondary, 0.15)
-            : AppColors.darken(AppColors.cardBorder, 0.08);
+            : AppColors.darken(AppColors.cardBorder(context), 0.08);
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
@@ -442,7 +491,7 @@ class _OptionTileState extends State<_OptionTile> {
                     color:
                         widget.isSelected
                             ? AppColors.secondary
-                            : AppColors.textLight,
+                            : AppColors.textLight(context),
                     width: 2.5,
                   ),
                 ),
@@ -463,8 +512,8 @@ class _OptionTileState extends State<_OptionTile> {
                     fontSize: 15,
                     color:
                         widget.isSelected
-                            ? AppColors.background
-                            : AppColors.textPrimary,
+                            ? AppColors.background(context)
+                            : AppColors.textPrimary(context),
                     fontWeight:
                         widget.isSelected ? FontWeight.w600 : FontWeight.normal,
                     height: 1.4,
@@ -489,6 +538,7 @@ class ResultsScreen extends StatefulWidget {
   final int timeSpentSeconds;
   final List<QuestionWithOptions> examQuestions;
   final Map<int, int> answers;
+  final double passingPercentage;
 
   const ResultsScreen({
     super.key,
@@ -497,6 +547,7 @@ class ResultsScreen extends StatefulWidget {
     required this.timeSpentSeconds,
     required this.examQuestions,
     required this.answers,
+    required this.passingPercentage,
   });
 
   @override
@@ -514,7 +565,9 @@ class _ResultsScreenState extends State<ResultsScreen>
   void initState() {
     super.initState();
 
-    final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
+    final double percentage =
+        (widget.totalCorrect / widget.totalQuestions) * 100;
+    final bool passed = percentage >= widget.passingPercentage;
 
     _scoreController = AnimationController(
       vsync: this,
@@ -669,7 +722,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           child: CircularProgressIndicator(
                             value: animatedValue,
                             strokeWidth: 14,
-                            backgroundColor: AppColors.progressTrack,
+                            backgroundColor: AppColors.progressTrack(context),
                             valueColor: AlwaysStoppedAnimation(accentColor),
                             strokeCap: StrokeCap.round,
                           ),
@@ -689,7 +742,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                               '${widget.totalCorrect}/${widget.totalQuestions}',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: AppColors.textSecondary,
+                                color: AppColors.textSecondary(context),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -731,7 +784,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           : 'Necesitas al menos 6 respuestas correctas\npara aprobar. ¡Tú puedes!',
                       style: TextStyle(
                         fontSize: 15,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                         height: 1.5,
                       ),
                       textAlign: TextAlign.center,

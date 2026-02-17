@@ -126,9 +126,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: AppColors.surface(context),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.cardBorder),
+                            border: Border.all(
+                              color: AppColors.cardBorder(context),
+                            ),
                           ),
                           child: Icon(
                             ThemeService().isDark
@@ -137,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             color:
                                 ThemeService().isDark
                                     ? AppColors.orange
-                                    : AppColors.textSecondary,
+                                    : AppColors.textSecondary(context),
                             size: 22,
                           ),
                         ),
@@ -159,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 8), */
@@ -167,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       '¡Prepárate para aprobar tu examen de manejo! 🚗',
                       style: TextStyle(
                         fontSize: 15,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -223,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textSecondary,
+                                color: AppColors.textSecondary(context),
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -342,9 +344,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: AppColors.cardBorder(context)),
         ),
         child: Column(
           children: [
@@ -355,12 +357,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
             Text(
               label,
-              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.textSecondary(context),
+              ),
             ),
           ],
         ),
@@ -372,10 +377,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return GestureDetector(
       onTap: () {
         SoundService().playTap();
-        Navigator.push(
-          context,
-          _slideRoute(ExamScreen(allQuestions: questions)),
-        ).then((_) => _loadStats());
+        _showExamTypeDialog();
       },
       child: Container(
         width: double.infinity,
@@ -536,6 +538,161 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
+  // ─── Exam Type Selection Bottom Sheet ──────────────────────────────────────
+
+  void _showExamTypeDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface(context),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+            ),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Drag Handle
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardBorder(context),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+
+                    // Header Icon
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.quiz_rounded,
+                        color: AppColors.primary,
+                        size: 52,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Title
+                    Text(
+                      'Elige tu examen',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary(context),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Subtitle
+                    Text(
+                      'Selecciona el tipo de examen que quieres realizar',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSecondary(context),
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Official Exam Option
+                    _ExamTypeCard(
+                      icon: Icons.verified_rounded,
+                      color: AppColors.primary,
+                      title: 'Examen Oficial',
+                      subtitle: 'Simula el examen real',
+                      features: [
+                        '✓ 10 preguntas aleatorias',
+                        '✓ 5 minutos de duración',
+                        '✓ Mínimo 6 correctas para aprobar (60%)',
+                      ],
+                      badge: 'Recomendado',
+                      badgeColor: AppColors.primary,
+                      onTap: () {
+                        Navigator.pop(context);
+                        SoundService().playTap();
+                        Navigator.push(
+                          context,
+                          _slideRoute(
+                            ExamScreen(
+                              allQuestions: questions,
+                              isFullExam: false,
+                            ),
+                          ),
+                        ).then((_) => _loadStats());
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Full Exam Option
+                    _ExamTypeCard(
+                      icon: Icons.library_books_rounded,
+                      color: AppColors.secondary,
+                      title: 'Examen Completo',
+                      subtitle: 'Todas las preguntas de la guía',
+                      features: [
+                        '✓ ${questions.length} preguntas',
+                        '✓ 60 minutos de duración',
+                        '✓ Mínimo 70% para aprobar',
+                      ],
+                      badge: 'Estudio',
+                      badgeColor: AppColors.secondary,
+                      onTap: () {
+                        Navigator.pop(context);
+                        SoundService().playTap();
+                        Navigator.push(
+                          context,
+                          _slideRoute(
+                            ExamScreen(
+                              allQuestions: questions,
+                              isFullExam: true,
+                            ),
+                          ),
+                        ).then((_) => _loadStats());
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Cancel Button
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          color: AppColors.textSecondary(context),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+    );
+  }
 }
 
 // ─── Action Card with Duolingo-style 3D press effect ────────────────────────
@@ -585,9 +742,9 @@ class _ActionCardState extends State<_ActionCard> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.cardBorder, width: 2),
+            border: Border.all(color: AppColors.cardBorder(context), width: 2),
           ),
           child: Row(
             children: [
@@ -612,7 +769,7 @@ class _ActionCardState extends State<_ActionCard> {
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -620,7 +777,7 @@ class _ActionCardState extends State<_ActionCard> {
                       widget.subtitle,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                       ),
                     ),
                   ],
@@ -629,7 +786,7 @@ class _ActionCardState extends State<_ActionCard> {
               // Arrow
               Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textLight,
+                color: AppColors.textLight(context),
                 size: 24,
               ),
             ],
@@ -683,9 +840,9 @@ class _CompactCardState extends State<_CompactCard> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder, width: 2),
+            border: Border.all(color: AppColors.cardBorder(context), width: 2),
           ),
           child: Column(
             children: [
@@ -704,7 +861,7 @@ class _CompactCardState extends State<_CompactCard> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimary(context),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -787,8 +944,8 @@ class _ReminderBannerState extends State<_ReminderBanner> {
             colorScheme: ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
-              surface: AppColors.surface,
-              onSurface: AppColors.textPrimary,
+              surface: AppColors.surface(context),
+              onSurface: AppColors.textPrimary(context),
             ),
           ),
           child: child!,
@@ -822,9 +979,9 @@ class _ReminderBannerState extends State<_ReminderBanner> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder, width: 2),
+        border: Border.all(color: AppColors.cardBorder(context), width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -861,7 +1018,7 @@ class _ReminderBannerState extends State<_ReminderBanner> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                     Text(
@@ -870,7 +1027,7 @@ class _ReminderBannerState extends State<_ReminderBanner> {
                           : 'No olvides practicar',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondary(context),
                       ),
                     ),
                   ],
@@ -933,6 +1090,122 @@ class _ReminderBannerState extends State<_ReminderBanner> {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ─── Exam Type Card Widget ──────────────────────────────────────────────────
+
+class _ExamTypeCard extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final List<String> features;
+  final String badge;
+  final Color badgeColor;
+  final VoidCallback onTap;
+
+  const _ExamTypeCard({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.features,
+    required this.badge,
+    required this.badgeColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.surface(context),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(icon, color: color, size: 28),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary(context),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badgeColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      badge,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: badgeColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              ...features.map(
+                (feature) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    feature,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary(context),
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:examen_vial_edomex_app_2025/services/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -17,22 +16,41 @@ class AppColors {
   static const Color purple = Color(0xFFCE82FF);
 
   // Neutral colors — dynamic based on theme
-  static bool get _isDark => ThemeService().isDark;
+  // These methods require BuildContext to properly react to theme changes
+  static Color background(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF1B1B2F)
+          : const Color(0xFFF7F7F7);
 
-  static Color get background =>
-      _isDark ? const Color(0xFF1B1B2F) : const Color(0xFFF7F7F7);
-  static Color get surface =>
-      _isDark ? const Color(0xFF262640) : const Color(0xFFFFFFFF);
-  static Color get cardBorder =>
-      _isDark ? const Color(0xFF3A3A52) : const Color(0xFFE5E5E5);
-  static Color get progressTrack =>
-      _isDark ? const Color(0xFF3A3A52) : const Color(0xFFE5E5E5);
-  static Color get textPrimary =>
-      _isDark ? const Color(0xFFEAEAEF) : const Color(0xFF3C3C3C);
-  static Color get textSecondary =>
-      _isDark ? const Color(0xFF9E9EB3) : const Color(0xFF777777);
-  static Color get textLight =>
-      _isDark ? const Color(0xFF6B6B80) : const Color(0xFFAFAFAF);
+  static Color surface(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF262640)
+          : const Color(0xFFFFFFFF);
+
+  static Color cardBorder(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF3A3A52)
+          : const Color(0xFFE5E5E5);
+
+  static Color progressTrack(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF3A3A52)
+          : const Color(0xFFE5E5E5);
+
+  static Color textPrimary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFFEAEAEF)
+          : const Color(0xFF3C3C3C);
+
+  static Color textSecondary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF9E9EB3)
+          : const Color(0xFF777777);
+
+  static Color textLight(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF6B6B80)
+          : const Color(0xFFAFAFAF);
 
   static const Color white = Color(0xFFFFFFFF);
 
@@ -52,10 +70,20 @@ class AppTheme {
   static ThemeData _buildTheme(Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
 
+    // Define theme-specific colors
+    final backgroundColor =
+        isDark ? const Color(0xFF1B1B2F) : const Color(0xFFF7F7F7);
+    final surfaceColor =
+        isDark ? const Color(0xFF262640) : const Color(0xFFFFFFFF);
+    final cardBorderColor =
+        isDark ? const Color(0xFF3A3A52) : const Color(0xFFE5E5E5);
+    final textPrimaryColor =
+        isDark ? const Color(0xFFEAEAEF) : const Color(0xFF3C3C3C);
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: backgroundColor,
       colorScheme: (isDark
               ? const ColorScheme.dark(
                 primary: AppColors.primary,
@@ -65,15 +93,15 @@ class AppTheme {
                 primary: AppColors.primary,
                 secondary: AppColors.secondary,
               ))
-          .copyWith(surface: AppColors.surface),
+          .copyWith(surface: surfaceColor),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: surfaceColor,
+        foregroundColor: textPrimaryColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: AppColors.textPrimary,
+          color: textPrimaryColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -83,11 +111,11 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: surfaceColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.cardBorder, width: 2),
+          side: BorderSide(color: cardBorderColor, width: 2),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
