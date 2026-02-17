@@ -1,5 +1,6 @@
 import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/data/data.dart';
+import 'package:examen_vial_edomex_app_2025/data/traffic_signs_questions_generator.dart';
 import 'package:examen_vial_edomex_app_2025/screens/exam_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/favorites_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/guide_screen.dart';
@@ -542,6 +543,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // ─── Exam Type Selection Bottom Sheet ──────────────────────────────────────
 
   void _showExamTypeDialog() {
+    var allQuestions = [...questions, ...trafficSignsQuestions];
+
+    allQuestions.shuffle();
+    allQuestions = allQuestions.take(50).toList();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -632,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           context,
                           _slideRoute(
                             ExamScreen(
-                              allQuestions: questions,
+                              allQuestions: allQuestions,
                               isFullExam: false,
                             ),
                           ),
@@ -648,7 +654,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       title: 'Examen Completo',
                       subtitle: 'Todas las preguntas de la guía',
                       features: [
-                        '✓ ${questions.length} preguntas',
+                        '✓ ${allQuestions.length} preguntas',
                         '✓ 60 minutos de duración',
                         '✓ Mínimo 70% para aprobar',
                       ],
@@ -661,7 +667,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           context,
                           _slideRoute(
                             ExamScreen(
-                              allQuestions: questions,
+                              allQuestions: allQuestions,
                               isFullExam: true,
                             ),
                           ),

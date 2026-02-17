@@ -7,6 +7,7 @@ import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// Data class to hold each question + the options shown + user's answer
 class ReviewItem {
@@ -535,6 +536,62 @@ class _ReviewCardState extends State<_ReviewCard> {
             color: AppColors.progressTrack(context),
             margin: const EdgeInsets.only(bottom: 14),
           ),
+
+          // Image if exists
+          if (item.question.imagePath != null) ...[
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: item.question.imagePath!,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: AppColors.progressTrack(context),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                              AppColors.secondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) => Container(
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: AppColors.progressTrack(context),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.broken_image_outlined,
+                              size: 36,
+                              color: AppColors.textLight(context),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Error al cargar imagen',
+                              style: TextStyle(
+                                color: AppColors.textSecondary(context),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // Options list
           ...item.options.map((opt) {
