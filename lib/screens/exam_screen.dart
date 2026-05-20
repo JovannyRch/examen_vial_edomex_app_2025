@@ -2,6 +2,7 @@ import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/models/option.dart';
 import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
 import 'package:examen_vial_edomex_app_2025/screens/review_screen.dart';
+import 'package:examen_vial_edomex_app_2025/services/achievement_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
@@ -698,15 +699,46 @@ class _ResultsScreenState extends State<ResultsScreen>
 
       // Auto-save failed questions to favorites
       final failedIds = <int>[];
+      final categoryIds = <int>{};
+      final categoryResults = <int, ({int correct, int incorrect})>{};
       for (var q in widget.examQuestions) {
         final selectedId = widget.answers[q.question.id];
+        final categoryId = q.question.category.index;
+        final previous =
+            categoryResults[categoryId] ?? (correct: 0, incorrect: 0);
+
         if (selectedId == null || selectedId != q.question.correctOptionId) {
           failedIds.add(q.question.id);
+          categoryResults[categoryId] = (
+            correct: previous.correct,
+            incorrect: previous.incorrect + 1,
+          );
+        } else {
+          categoryResults[categoryId] = (
+            correct: previous.correct + 1,
+            incorrect: previous.incorrect,
+          );
         }
+        categoryIds.add(categoryId);
       }
       if (failedIds.isNotEmpty) {
         await DatabaseService().saveFailedQuestions(failedIds);
       }
+      await DatabaseService().recordCategoryPerformance(categoryResults);
+
+      // Check achievements
+      final stats = await DatabaseService().getAllStats();
+      final favoriteCount = await DatabaseService().getFavoriteCount();
+      await AchievementService().onExamResultSaved(
+        correctAnswers: widget.totalCorrect,
+        totalQuestions: widget.totalQuestions,
+        passed: widget.totalCorrect >= EXAM_PASSING_SCORE,
+        timeSpentSeconds: widget.timeSpentSeconds,
+        streak: stats['streak'] as int,
+        totalExams: stats['totalExams'] as int,
+        favoriteCount: favoriteCount,
+        categoryIds: categoryIds.toList(),
+      );
 
       // Check and show review prompt if conditions are met
       await _checkAndShowReviewPrompt();

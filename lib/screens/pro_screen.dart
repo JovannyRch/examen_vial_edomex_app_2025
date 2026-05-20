@@ -16,6 +16,8 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
   late Animation<double> _headerScale;
   late Animation<double> _headerFade;
   bool _purchasing = false;
+  late bool _soundsEnabled;
+  late bool _hapticsEnabled;
 
   @override
   void initState() {
@@ -55,6 +57,9 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
         );
       }
     };
+
+    _soundsEnabled = SoundService().soundsEnabled;
+    _hapticsEnabled = SoundService().hapticsEnabled;
   }
 
   @override
@@ -215,6 +220,8 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
                         // Already-pro badge (only inside scroll)
                         if (isPro) ...[
                           _buildProBadge(),
+                          const SizedBox(height: 24),
+                          _buildSoundHapticsSection(),
                           const SizedBox(height: 24),
                         ],
 
@@ -421,6 +428,88 @@ class _ProScreenState extends State<ProScreen> with TickerProviderStateMixin {
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSoundHapticsSection() {
+    final soundService = SoundService();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.cardBorder(context), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ajustes',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary(context),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(
+                Icons.volume_up_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Sonidos',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary(context),
+                  ),
+                ),
+              ),
+              Switch(
+                value: _soundsEnabled,
+                onChanged: (value) async {
+                  await soundService.toggleSounds(value);
+                  setState(() => _soundsEnabled = value);
+                },
+                activeTrackColor: AppColors.primary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.vibration_rounded,
+                color: AppColors.orange,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Vibración',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary(context),
+                  ),
+                ),
+              ),
+              Switch(
+                value: _hapticsEnabled,
+                onChanged: (value) async {
+                  await soundService.toggleHaptics(value);
+                  setState(() => _hapticsEnabled = value);
+                },
+                activeTrackColor: AppColors.primary,
+              ),
+            ],
           ),
         ],
       ),

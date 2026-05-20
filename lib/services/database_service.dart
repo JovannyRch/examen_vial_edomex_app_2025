@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:examen_vial_edomex_app_2025/models/category_performance.dart';
 import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
 
 /// Singleton service for managing the SQLite database.
@@ -21,7 +22,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE exam_results (
@@ -40,6 +41,15 @@ class DatabaseService {
             date_added TEXT NOT NULL
           )
         ''');
+        await db.execute('''
+          CREATE TABLE category_performance (
+            category_id INTEGER PRIMARY KEY,
+            total_answered INTEGER NOT NULL DEFAULT 0,
+            correct_answered INTEGER NOT NULL DEFAULT 0,
+            incorrect_answered INTEGER NOT NULL DEFAULT 0,
+            last_practiced TEXT NOT NULL
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -48,6 +58,17 @@ class DatabaseService {
               question_id INTEGER PRIMARY KEY,
               source TEXT NOT NULL DEFAULT 'manual',
               date_added TEXT NOT NULL
+            )
+          ''');
+        }
+        if (oldVersion < 3) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS category_performance (
+              category_id INTEGER PRIMARY KEY,
+              total_answered INTEGER NOT NULL DEFAULT 0,
+              correct_answered INTEGER NOT NULL DEFAULT 0,
+              incorrect_answered INTEGER NOT NULL DEFAULT 0,
+              last_practiced TEXT NOT NULL
             )
           ''');
         }
@@ -165,6 +186,7 @@ class DatabaseService {
     final bestScore = await getBestScore();
     final streak = await getStudyStreak();
     final lastResults = await getLastResults(20);
+    final weakAreas = await getWeakAreas();
 
     return {
       'totalExams': totalExams,
@@ -173,6 +195,7 @@ class DatabaseService {
       'bestScore': bestScore,
       'streak': streak,
       'lastResults': lastResults,
+      'weakAreas': weakAreas,
       'passRate': totalExams > 0 ? (totalPassed / totalExams * 100) : 0.0,
     };
   }
@@ -181,6 +204,69 @@ class DatabaseService {
   Future<void> clearAllResults() async {
     final db = await database;
     await db.delete('exam_results');
+    await db.delete('category_performance');
+  }
+
+  // ─── Category Performance ─────────────────────────────────────────────────
+
+  /// Add per-category answer results from a completed exam.
+  Future<void> recordCategoryPerformance(
+    Map<int, ({int correct, int incorrect})> categoryResults,
+  ) async {
+    if (categoryResults.isEmpty) return;
+
+    final db = await database;
+    final now = DateTime.now().toIso8601String();
+
+    await db.transaction((txn) async {
+      for (final entry in categoryResults.entries) {
+        final categoryId = entry.key;
+        final correct = entry.value.correct;
+        final incorrect = entry.value.incorrect;
+        final total = correct + incorrect;
+        final existing = await txn.query(
+          'category_performance',
+          where: 'category_id = ?',
+          whereArgs: [categoryId],
+          limit: 1,
+        );
+
+        if (existing.isEmpty) {
+          await txn.insert('category_performance', {
+            'category_id': categoryId,
+            'total_answered': total,
+            'correct_answered': correct,
+            'incorrect_answered': incorrect,
+            'last_practiced': now,
+          });
+        } else {
+          await txn.rawUpdate(
+            '''
+            UPDATE category_performance
+            SET total_answered = total_answered + ?,
+                correct_answered = correct_answered + ?,
+                incorrect_answered = incorrect_answered + ?,
+                last_practiced = ?
+            WHERE category_id = ?
+            ''',
+            [total, correct, incorrect, now, categoryId],
+          );
+        }
+      }
+    });
+  }
+
+  /// Categories with the lowest accuracy, prioritizing areas with mistakes.
+  Future<List<CategoryPerformance>> getWeakAreas({int limit = 3}) async {
+    final db = await database;
+    final maps = await db.query(
+      'category_performance',
+      where: 'total_answered > 0 AND incorrect_answered > 0',
+      orderBy:
+          'CAST(correct_answered AS REAL) / total_answered ASC, incorrect_answered DESC, total_answered DESC',
+      limit: limit,
+    );
+    return maps.map((m) => CategoryPerformance.fromMap(m)).toList();
   }
 
   // ─── Favorite Questions ─────────────────────────────────────────────────────

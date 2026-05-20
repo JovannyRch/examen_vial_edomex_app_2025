@@ -1,4 +1,5 @@
 import 'package:examen_vial_edomex_app_2025/screens/home_screen.dart';
+import 'package:examen_vial_edomex_app_2025/services/achievement_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/admob_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
@@ -21,6 +22,7 @@ void main() async {
   await SoundService().initialize();
   await NotificationService().initialize();
   await PurchaseService().initialize();
+  await AchievementService().initialize();
   runApp(const MyApp());
 }
 

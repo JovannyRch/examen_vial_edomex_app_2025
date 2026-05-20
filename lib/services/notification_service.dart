@@ -20,6 +20,11 @@ class NotificationService {
   static const String _channelName = 'Recordatorio de estudio';
   static const String _channelDescription =
       'Notificación diaria para recordarte estudiar';
+  static const int _achievementNotificationId = 43;
+  static const String _achievementChannelId = 'achievements';
+  static const String _achievementChannelName = 'Logros';
+  static const String _achievementChannelDescription =
+      'Notificaciones cuando desbloqueas logros';
 
   // ── Reminder messages (rotated daily) ──────────────────────────────────────
   static const List<String> _messages = [
@@ -169,5 +174,29 @@ class NotificationService {
   Future<int> getReminderMinute() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(_keyMinute) ?? 0;
+  }
+
+  Future<void> showAchievementNotification(String title, String emoji) async {
+    await _plugin.show(
+      _achievementNotificationId,
+      '$emoji ¡Logro Desbloqueado!',
+      title,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _achievementChannelId,
+          _achievementChannelName,
+          channelDescription: _achievementChannelDescription,
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          styleInformation: const BigTextStyleInformation(''),
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/data/data.dart';
 import 'package:examen_vial_edomex_app_2025/data/traffic_signs_questions_generator.dart';
+import 'package:examen_vial_edomex_app_2025/screens/achievement_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/exam_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/favorites_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/guide_screen.dart';
@@ -287,6 +288,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         context,
                                         _slideRoute(const ProgressScreen()),
                                       ).then((_) => _loadStats()),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _CompactCard(
+                                  icon: Icons.emoji_events_rounded,
+                                  color: AppColors.orange,
+                                  title: 'Logros',
+                                  onTap:
+                                      () => Navigator.push(
+                                        context,
+                                        _slideRoute(const AchievementScreen()),
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),

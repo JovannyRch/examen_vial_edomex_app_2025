@@ -1,4 +1,5 @@
 import 'package:examen_vial_edomex_app_2025/models/exam_result.dart';
+import 'package:examen_vial_edomex_app_2025/models/category_performance.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
 import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
@@ -22,6 +23,7 @@ class _ProgressScreenState extends State<ProgressScreen>
   bool _isLoading = true;
   Map<String, dynamic> _stats = {};
   List<ExamResult> _lastResults = [];
+  List<CategoryPerformance> _weakAreas = [];
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _ProgressScreenState extends State<ProgressScreen>
       setState(() {
         _stats = stats;
         _lastResults = results;
+        _weakAreas = stats['weakAreas'] as List<CategoryPerformance>;
         _isLoading = false;
       });
       _animController.forward();
@@ -89,6 +92,8 @@ class _ProgressScreenState extends State<ProgressScreen>
                             _buildStatsGrid(),
                             const SizedBox(height: 24),
                             _buildScoreChart(),
+                            const SizedBox(height: 24),
+                            _buildWeakAreas(),
                             const SizedBox(height: 24),
                             _buildRecentResults(),
                             const SizedBox(height: 24),
@@ -163,7 +168,10 @@ class _ProgressScreenState extends State<ProgressScreen>
           colors:
               hasStreak
                   ? [AppColors.orange, const Color(0xFFFFB347)]
-                  : [AppColors.cardBorder(context), AppColors.cardBorder(context)],
+                  : [
+                    AppColors.cardBorder(context),
+                    AppColors.cardBorder(context),
+                  ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -194,7 +202,10 @@ class _ProgressScreenState extends State<ProgressScreen>
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
-                    color: hasStreak ? Colors.white : AppColors.textSecondary(context),
+                    color:
+                        hasStreak
+                            ? Colors.white
+                            : AppColors.textSecondary(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -348,8 +359,10 @@ class _ProgressScreenState extends State<ProgressScreen>
                   horizontalInterval: 20,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine:
-                      (value) =>
-                          FlLine(color: AppColors.cardBorder(context), strokeWidth: 1),
+                      (value) => FlLine(
+                        color: AppColors.cardBorder(context),
+                        strokeWidth: 1,
+                      ),
                 ),
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
@@ -445,8 +458,9 @@ class _ProgressScreenState extends State<ProgressScreen>
                     getTooltipColor: (spot) => AppColors.textPrimary(context),
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
-                        if (spot.barIndex == 1)
+                        if (spot.barIndex == 1) {
                           return null; // Skip threshold line
+                        }
                         final idx = spot.x.toInt();
                         if (idx < 0 || idx >= _lastResults.length) return null;
                         final result = _lastResults[idx];
@@ -480,7 +494,10 @@ class _ProgressScreenState extends State<ProgressScreen>
               const SizedBox(width: 6),
               Text(
                 'Línea de aprobación (${EXAM_PASSING_PERCENTAGE.round()}%)',
-                style: TextStyle(color: AppColors.textLight(context), fontSize: 11),
+                style: TextStyle(
+                  color: AppColors.textLight(context),
+                  fontSize: 11,
+                ),
               ),
             ],
           ),
@@ -490,6 +507,63 @@ class _ProgressScreenState extends State<ProgressScreen>
   }
 
   // ─── Recent Results ───────────────────────────────────────────────────────
+
+  Widget _buildWeakAreas() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.cardBorder(context), width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.psychology_alt_rounded,
+                  color: AppColors.orange,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Áreas de oportunidad',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          if (_weakAreas.isEmpty)
+            Text(
+              'Aún no hay errores suficientes para detectar áreas débiles. Completa más exámenes para recibir recomendaciones.',
+              style: TextStyle(
+                color: AppColors.textSecondary(context),
+                fontSize: 13,
+                height: 1.4,
+              ),
+            )
+          else
+            ..._weakAreas.map((area) => _WeakAreaRow(area: area)),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRecentResults() {
     // Show last 5 only
@@ -518,7 +592,10 @@ class _ProgressScreenState extends State<ProgressScreen>
             decoration: BoxDecoration(
               color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.cardBorder(context), width: 2),
+              border: Border.all(
+                color: AppColors.cardBorder(context),
+                width: 2,
+              ),
             ),
             child: Row(
               children: [
@@ -594,6 +671,72 @@ class _ProgressScreenState extends State<ProgressScreen>
   }
 }
 
+class _WeakAreaRow extends StatelessWidget {
+  final CategoryPerformance area;
+
+  const _WeakAreaRow({required this.area});
+
+  @override
+  Widget build(BuildContext context) {
+    final accuracy = area.accuracy.round();
+    final progress = (area.accuracy / 100).clamp(0.0, 1.0);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Text(area.category.emoji, style: const TextStyle(fontSize: 24)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  area.category.label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 8,
+                    backgroundColor: AppColors.red.withValues(alpha: 0.14),
+                    valueColor: AlwaysStoppedAnimation(
+                      accuracy >= 70 ? AppColors.primary : AppColors.orange,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${area.incorrectAnswered} errores de ${area.totalAnswered} respuestas',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '$accuracy%',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: accuracy >= 70 ? AppColors.primary : AppColors.orange,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Stat Card Widget ───────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
@@ -642,7 +785,10 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context)),
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary(context),
+            ),
           ),
         ],
       ),
