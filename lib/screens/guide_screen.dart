@@ -4,6 +4,7 @@ import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
+import 'package:examen_vial_edomex_app_2025/widgets/question_report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -165,28 +166,48 @@ class _GuideScreenState extends State<GuideScreen> {
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () => _toggleFavorite(q.id),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              transitionBuilder: (child, animation) {
-                                return ScaleTransition(
-                                  scale: animation,
-                                  child: child,
-                                );
-                              },
-                              child: Icon(
-                                _favoriteIds.contains(q.id)
-                                    ? Icons.bookmark_rounded
-                                    : Icons.bookmark_border_rounded,
-                                key: ValueKey(_favoriteIds.contains(q.id)),
-                                color:
-                                    _favoriteIds.contains(q.id)
-                                        ? AppColors.orange
-                                        : AppColors.textLight(context),
-                                size: 28,
+                          Row(
+                            children: [
+                              IconButton(
+                                tooltip: 'Reportar pregunta',
+                                icon: Icon(
+                                  Icons.flag_outlined,
+                                  color: AppColors.textLight(context),
+                                ),
+                                onPressed:
+                                    () => showQuestionReportSheet(
+                                      context: context,
+                                      question: q,
+                                      source:
+                                          widget.isReviewSession
+                                              ? 'review_guide'
+                                              : 'guide',
+                                    ),
                               ),
-                            ),
+                              GestureDetector(
+                                onTap: () => _toggleFavorite(q.id),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Icon(
+                                    _favoriteIds.contains(q.id)
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_border_rounded,
+                                    key: ValueKey(_favoriteIds.contains(q.id)),
+                                    color:
+                                        _favoriteIds.contains(q.id)
+                                            ? AppColors.orange
+                                            : AppColors.textLight(context),
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

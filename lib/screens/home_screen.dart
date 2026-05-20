@@ -1,6 +1,7 @@
 import 'package:examen_vial_edomex_app_2025/const/const.dart';
 import 'package:examen_vial_edomex_app_2025/data/data.dart';
 import 'package:examen_vial_edomex_app_2025/data/traffic_signs_questions_generator.dart';
+import 'package:examen_vial_edomex_app_2025/screens/account_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/achievement_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/exam_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/favorites_screen.dart';
@@ -130,36 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     const SizedBox(height: 12),
-                    // Theme toggle
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          SoundService().playTap();
-                          ThemeService().toggleTheme();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface(context),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.cardBorder(context),
-                            ),
-                          ),
-                          child: Icon(
-                            ThemeService().isDark
-                                ? Icons.light_mode_rounded
-                                : Icons.dark_mode_rounded,
-                            color:
-                                ThemeService().isDark
-                                    ? AppColors.orange
-                                    : AppColors.textSecondary(context),
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildTopBar(),
                     const SizedBox(height: 8),
                     // Logo
                     /* Container(
@@ -358,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 child: _CompactCard(
                                   icon: Icons.info_outline_rounded,
                                   color: AppColors.secondaryDark,
-                                  title: 'Info Examen',
+                                  title: 'Info',
                                   onTap:
                                       () => Navigator.push(
                                         context,
@@ -401,6 +373,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return SlideTransition(
       position: _slideAnimations[index],
       child: FadeTransition(opacity: _fadeAnimations[index], child: child),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Examen Vial EdoMex',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Tu práctica de manejo',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        _IconUtilityButton(
+          icon: Icons.person_rounded,
+          tooltip: 'Cuenta',
+          color: AppColors.primary,
+          onTap: () {
+            SoundService().playTap();
+            Navigator.push(context, _slideRoute(const AccountScreen()));
+          },
+        ),
+        const SizedBox(width: 10),
+        _IconUtilityButton(
+          icon:
+              ThemeService().isDark
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded,
+          tooltip: ThemeService().isDark ? 'Tema claro' : 'Tema oscuro',
+          color:
+              ThemeService().isDark
+                  ? AppColors.orange
+                  : AppColors.textSecondary(context),
+          onTap: () {
+            SoundService().playTap();
+            ThemeService().toggleTheme();
+          },
+        ),
+      ],
     );
   }
 
@@ -908,6 +937,61 @@ class _ActionCardState extends State<_ActionCard> {
   }
 }
 
+// ─── Header Utility Button ───────────────────────────────────────────────────
+
+class _IconUtilityButton extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _IconUtilityButton({
+    required this.icon,
+    required this.tooltip,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  State<_IconUtilityButton> createState() => _IconUtilityButtonState();
+}
+
+class _IconUtilityButtonState extends State<_IconUtilityButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.tooltip,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) {
+          setState(() => _isPressed = false);
+          widget.onTap();
+        },
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedScale(
+          scale: _isPressed ? 0.94 : 1,
+          duration: const Duration(milliseconds: 90),
+          child: Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.surface(context),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.cardBorder(context),
+                width: 2,
+              ),
+            ),
+            child: Icon(widget.icon, color: widget.color, size: 22),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Compact Card for grid items ─────────────────────────────────────────────
 
 class _CompactCard extends StatefulWidget {
@@ -949,7 +1033,8 @@ class _CompactCardState extends State<_CompactCard> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          height: 104,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           decoration: BoxDecoration(
             color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(16),
@@ -974,6 +1059,8 @@ class _CompactCardState extends State<_CompactCard> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary(context),
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
               ),
             ],

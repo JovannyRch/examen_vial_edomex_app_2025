@@ -104,6 +104,9 @@ Track user cohort retention, funnel drop-off rates, most failed questions global
 ### 26. Crash Reporting & Error Tracking
 Production-grade monitoring via Firebase Crashlytics or Sentry. Real-time alerts for app stability issues.
 
+### 26.1 Supabase Auth Foundation (Implemented ✓)
+Optional Supabase authentication with silent anonymous sign-in and email upgrade. Enables future cloud sync, reports, tips, voting, and leaderboards without forcing users to create an account upfront.
+
 ---
 
 ## Community & Social
@@ -120,8 +123,8 @@ User-submitted exam tips and tricks backed by Supabase. Upvote/downvote system, 
 ### 30. Remote Question Updates
 Use Supabase to publish corrected or newly added exam questions without requiring an app update. Includes versioning, active/inactive status, category tags, explanations, and optional image URLs.
 
-### 31. Question Reports & Admin Review
-Let users report confusing, outdated, or incorrect questions. Store reports in Supabase with device/user metadata, question ID, reason, and status so an admin can review and resolve them.
+### 31. Question Reports & Admin Review (Implemented ✓)
+Let users report confusing, outdated, or incorrect questions. Store reports in Supabase with device/user metadata, question ID, reason, and status so an admin can review and resolve them. Includes a reusable in-app report sheet and Supabase table/RLS setup for admin review workflows.
 
 ### 32. Anonymous Community Insights
 Aggregate anonymized exam performance in Supabase to show globally difficult categories/questions. Could power messages like "Esta pregunta la falla mucha gente" or a developer dashboard of most-missed questions.

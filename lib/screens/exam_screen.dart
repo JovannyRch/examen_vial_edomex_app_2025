@@ -10,6 +10,7 @@ import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
+import 'package:examen_vial_edomex_app_2025/widgets/question_report_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
@@ -250,6 +251,24 @@ class _ExamScreenState extends State<ExamScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Reportar pregunta',
+            icon: Icon(
+              Icons.flag_outlined,
+              color: AppColors.textSecondary(context),
+            ),
+            onPressed:
+                () => showQuestionReportSheet(
+                  context: context,
+                  question: currentQ,
+                  source:
+                      widget.customQuestionCount != null
+                          ? 'custom_exam'
+                          : widget.isFullExam
+                          ? 'full_exam'
+                          : 'official_exam',
+                ),
+          ),
           if (widget.isTimed)
             Container(
               margin: const EdgeInsets.only(right: 12),

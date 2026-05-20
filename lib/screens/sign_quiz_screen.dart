@@ -7,6 +7,7 @@ import 'package:examen_vial_edomex_app_2025/services/sound_service.dart';
 import 'package:examen_vial_edomex_app_2025/theme/app_theme.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/ad_banner_widget.dart';
 import 'package:examen_vial_edomex_app_2025/widgets/duo_button.dart';
+import 'package:examen_vial_edomex_app_2025/widgets/question_report_sheet.dart';
 import 'package:flutter/material.dart';
 
 class SignQuizScreen extends StatefulWidget {
@@ -72,9 +73,11 @@ class _SignQuizScreenState extends State<SignQuizScreen> {
     }
   }
 
-  void _startTimer() {
+  void _startTimer({bool reset = true}) {
     _timer?.cancel();
-    _secondsRemaining = _speedSecondsPerQuestion;
+    if (reset) {
+      _secondsRemaining = _speedSecondsPerQuestion;
+    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted || _showResults) {
         timer.cancel();
@@ -148,6 +151,24 @@ class _SignQuizScreenState extends State<SignQuizScreen> {
     }
   }
 
+  Future<void> _reportQuestion(Question question) async {
+    final shouldResumeTimer =
+        _speedMode && !_showResults && !_answers.containsKey(question.id);
+    if (shouldResumeTimer) {
+      _timer?.cancel();
+    }
+
+    await showQuestionReportSheet(
+      context: context,
+      question: question,
+      source: _speedMode ? 'sign_quiz_speed' : 'sign_quiz',
+    );
+
+    if (mounted && shouldResumeTimer && !_answers.containsKey(question.id)) {
+      _startTimer(reset: false);
+    }
+  }
+
   int get _correctCount {
     return _roundQuestions
         .where((q) => _answers[q.id] == q.correctOptionId)
@@ -197,6 +218,14 @@ class _SignQuizScreenState extends State<SignQuizScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Reportar señal',
+            icon: Icon(
+              Icons.flag_outlined,
+              color: AppColors.textSecondary(context),
+            ),
+            onPressed: () => _reportQuestion(question),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: _ModePill(
