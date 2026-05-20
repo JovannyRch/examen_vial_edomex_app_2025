@@ -10,8 +10,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 class GuideScreen extends StatefulWidget {
   final List<Question> allQuestions;
   final String? title;
+  final bool isReviewSession;
 
-  const GuideScreen({super.key, required this.allQuestions, this.title});
+  const GuideScreen({
+    super.key,
+    required this.allQuestions,
+    this.title,
+    this.isReviewSession = false,
+  });
 
   @override
   State<GuideScreen> createState() => _GuideScreenState();
@@ -66,6 +72,18 @@ class _GuideScreenState extends State<GuideScreen> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _finishGuide() async {
+    if (widget.isReviewSession) {
+      await DatabaseService().markReviewQuestionsStudied(
+        widget.allQuestions.map((q) => q.id).toList(),
+      );
+    }
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -355,7 +373,7 @@ class _GuideScreenState extends State<GuideScreen> {
                         text: 'Finalizar',
                         color: AppColors.primary,
                         icon: Icons.check_rounded,
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: _finishGuide,
                       ),
                     ),
                 ],

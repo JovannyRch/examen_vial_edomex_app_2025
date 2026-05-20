@@ -7,9 +7,11 @@ import 'package:examen_vial_edomex_app_2025/screens/favorites_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/guide_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/pdf_viewer_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/category_screen.dart';
+import 'package:examen_vial_edomex_app_2025/screens/custom_exam_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/info_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/pro_screen.dart';
 import 'package:examen_vial_edomex_app_2025/screens/progress_screen.dart';
+import 'package:examen_vial_edomex_app_2025/screens/sign_quiz_screen.dart';
 import 'package:examen_vial_edomex_app_2025/services/database_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/notification_service.dart';
 import 'package:examen_vial_edomex_app_2025/services/purchase_service.dart';
@@ -42,12 +44,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _totalExams = 0;
   int _bestScore = 0;
   int _streak = 0;
+  int _dueReviewCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadStats();
-    _controllers = List.generate(6, (index) {
+    _controllers = List.generate(9, (index) {
       return AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 500 + (index * 150)),
@@ -86,11 +89,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _loadStats() async {
     try {
       final stats = await DatabaseService().getAllStats();
+      final dueReviewCount = await DatabaseService().getDueReviewCount();
       if (mounted) {
         setState(() {
           _totalExams = stats['totalExams'] as int;
           _bestScore = (stats['bestScore'] as num).round();
           _streak = stats['streak'] as int;
+          _dueReviewCount = dueReviewCount;
         });
       }
     } catch (_) {}
@@ -224,11 +229,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             _slideRoute(const CategoryScreen()),
                           ).then((_) => _loadStats()),
                     ),
+                    const SizedBox(height: 12),
+                    _buildAnimatedCard(
+                      index: 4,
+                      icon: Icons.tune_rounded,
+                      color: AppColors.primary,
+                      title: 'Crear Examen',
+                      subtitle: 'Elige categorías, cantidad y tiempo',
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            _slideRoute(
+                              CustomExamScreen(allQuestions: allQuestions),
+                            ),
+                          ).then((_) => _loadStats()),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildAnimatedCard(
+                      index: 5,
+                      icon: Icons.traffic_rounded,
+                      color: AppColors.red,
+                      title: 'Quiz de Señales',
+                      subtitle:
+                          'Identifica señales por imagen y juega contra reloj',
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            _slideRoute(
+                              SignQuizScreen(
+                                signQuestions: trafficSignsQuestions,
+                              ),
+                            ),
+                          ).then((_) => _loadStats()),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildAnimatedCard(
+                      index: 6,
+                      icon: Icons.replay_rounded,
+                      color: AppColors.purple,
+                      title: 'Repasar',
+                      subtitle:
+                          _dueReviewCount == 0
+                              ? 'No tienes preguntas pendientes por ahora'
+                              : '$_dueReviewCount pregunta${_dueReviewCount == 1 ? '' : 's'} lista${_dueReviewCount == 1 ? '' : 's'} para reforzar',
+                      onTap: _openReviewQueue,
+                    ),
                     const SizedBox(height: 20),
 
                     // Herramientas Grid
                     _buildAnimatedWidget(
-                      4,
+                      7,
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -327,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ValueListenableBuilder<bool>(
                       valueListenable: PurchaseService().isPro,
                       builder: (context, isPro, _) {
-                        return _buildAnimatedWidget(5, _buildProBanner(isPro));
+                        return _buildAnimatedWidget(8, _buildProBanner(isPro));
                       },
                     ),
 
@@ -472,6 +522,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Future<void> _openReviewQueue() async {
+    SoundService().playTap();
+    final dueIds = await DatabaseService().getDueReviewQuestionIds();
+    if (!mounted) return;
+
+    if (dueIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('No tienes preguntas pendientes para repasar.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.textPrimary(context),
+        ),
+      );
+      return;
+    }
+
+    final dueSet = dueIds.toSet();
+    final reviewQuestions =
+        allQuestions.where((q) => dueSet.contains(q.id)).toList()..sort(
+          (a, b) => dueIds.indexOf(a.id).compareTo(dueIds.indexOf(b.id)),
+        );
+
+    Navigator.push(
+      context,
+      _slideRoute(
+        GuideScreen(
+          allQuestions: reviewQuestions,
+          title: 'Repasar',
+          isReviewSession: true,
+        ),
+      ),
+    ).then((_) => _loadStats());
   }
 
   Widget _buildProBanner(bool isPro) {

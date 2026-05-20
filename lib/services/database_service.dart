@@ -22,7 +22,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE exam_results (
@@ -50,6 +50,15 @@ class DatabaseService {
             last_practiced TEXT NOT NULL
           )
         ''');
+        await db.execute('''
+          CREATE TABLE review_schedule (
+            question_id INTEGER PRIMARY KEY,
+            mistakes INTEGER NOT NULL DEFAULT 0,
+            successful_reviews INTEGER NOT NULL DEFAULT 0,
+            due_at TEXT NOT NULL,
+            last_reviewed TEXT
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -69,6 +78,17 @@ class DatabaseService {
               correct_answered INTEGER NOT NULL DEFAULT 0,
               incorrect_answered INTEGER NOT NULL DEFAULT 0,
               last_practiced TEXT NOT NULL
+            )
+          ''');
+        }
+        if (oldVersion < 4) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS review_schedule (
+              question_id INTEGER PRIMARY KEY,
+              mistakes INTEGER NOT NULL DEFAULT 0,
+              successful_reviews INTEGER NOT NULL DEFAULT 0,
+              due_at TEXT NOT NULL,
+              last_reviewed TEXT
             )
           ''');
         }
@@ -205,6 +225,7 @@ class DatabaseService {
     final db = await database;
     await db.delete('exam_results');
     await db.delete('category_performance');
+    await db.delete('review_schedule');
   }
 
   // ─── Category Performance ─────────────────────────────────────────────────
@@ -267,6 +288,104 @@ class DatabaseService {
       limit: limit,
     );
     return maps.map((m) => CategoryPerformance.fromMap(m)).toList();
+  }
+
+  // ─── Spaced Repetition ─────────────────────────────────────────────────────
+
+  Future<void> recordReviewOutcomes(Map<int, bool> questionOutcomes) async {
+    if (questionOutcomes.isEmpty) return;
+
+    final db = await database;
+    final now = DateTime.now();
+    final nowIso = now.toIso8601String();
+
+    await db.transaction((txn) async {
+      for (final entry in questionOutcomes.entries) {
+        final questionId = entry.key;
+        final wasCorrect = entry.value;
+        final existing = await txn.query(
+          'review_schedule',
+          where: 'question_id = ?',
+          whereArgs: [questionId],
+          limit: 1,
+        );
+
+        if (!wasCorrect) {
+          if (existing.isEmpty) {
+            await txn.insert('review_schedule', {
+              'question_id': questionId,
+              'mistakes': 1,
+              'successful_reviews': 0,
+              'due_at': nowIso,
+              'last_reviewed': nowIso,
+            });
+          } else {
+            await txn.rawUpdate(
+              '''
+              UPDATE review_schedule
+              SET mistakes = mistakes + 1,
+                  successful_reviews = 0,
+                  due_at = ?,
+                  last_reviewed = ?
+              WHERE question_id = ?
+              ''',
+              [nowIso, nowIso, questionId],
+            );
+          }
+        } else if (existing.isNotEmpty) {
+          final successfulReviews =
+              (existing.first['successful_reviews'] as int) + 1;
+          await txn.update(
+            'review_schedule',
+            {
+              'successful_reviews': successfulReviews,
+              'due_at':
+                  _nextReviewDate(now, successfulReviews).toIso8601String(),
+              'last_reviewed': nowIso,
+            },
+            where: 'question_id = ?',
+            whereArgs: [questionId],
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> markReviewQuestionsStudied(List<int> questionIds) async {
+    if (questionIds.isEmpty) return;
+
+    final outcomes = {for (final id in questionIds) id: true};
+    await recordReviewOutcomes(outcomes);
+  }
+
+  Future<List<int>> getDueReviewQuestionIds({int limit = 20}) async {
+    final db = await database;
+    final nowIso = DateTime.now().toIso8601String();
+    final maps = await db.query(
+      'review_schedule',
+      columns: ['question_id'],
+      where: 'due_at <= ?',
+      whereArgs: [nowIso],
+      orderBy: 'mistakes DESC, due_at ASC',
+      limit: limit,
+    );
+    return maps.map((m) => m['question_id'] as int).toList();
+  }
+
+  Future<int> getDueReviewCount() async {
+    final db = await database;
+    final nowIso = DateTime.now().toIso8601String();
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM review_schedule WHERE due_at <= ?',
+      [nowIso],
+    );
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+  DateTime _nextReviewDate(DateTime from, int successfulReviews) {
+    final intervals = [1, 3, 7, 14, 30];
+    final index = (successfulReviews - 1).clamp(0, intervals.length - 1);
+    return from.add(Duration(days: intervals[index]));
   }
 
   // ─── Favorite Questions ─────────────────────────────────────────────────────

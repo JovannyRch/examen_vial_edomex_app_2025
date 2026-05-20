@@ -29,11 +29,19 @@ class ExamScreen extends StatefulWidget {
   final List<Question> allQuestions;
   final bool
   isFullExam; // true = all questions, false = official (10 questions)
+  final int? customQuestionCount;
+  final int? customDurationMinutes;
+  final double? customPassingPercentage;
+  final bool isTimed;
 
   const ExamScreen({
     super.key,
     required this.allQuestions,
     this.isFullExam = false,
+    this.customQuestionCount,
+    this.customDurationMinutes,
+    this.customPassingPercentage,
+    this.isTimed = true,
   });
 
   @override
@@ -45,18 +53,25 @@ class _ExamScreenState extends State<ExamScreen> {
   Map<int, int> answers = {};
   int currentIndex = 0;
 
-  late Timer timer;
+  Timer? timer;
   late int secondsRemaining;
   late int totalDurationSeconds;
   late int questionsCount;
   late double passingPercentage;
+  late DateTime startedAt;
 
   @override
   void initState() {
     super.initState();
+    startedAt = DateTime.now();
 
     // Configure exam based on type
-    if (widget.isFullExam) {
+    if (widget.customQuestionCount != null) {
+      questionsCount = widget.customQuestionCount!;
+      totalDurationSeconds =
+          (widget.customDurationMinutes ?? questionsCount) * 60;
+      passingPercentage = widget.customPassingPercentage ?? 70.0;
+    } else if (widget.isFullExam) {
       questionsCount = 50;
       totalDurationSeconds = FULL_EXAM_DURATION_MINUTES * 60;
       passingPercentage = FULL_EXAM_PASSING_PERCENTAGE;
@@ -71,7 +86,9 @@ class _ExamScreenState extends State<ExamScreen> {
     List<Question> qs = List.from(widget.allQuestions)..shuffle();
 
     // Take only required number of questions (10 for official, all for full)
-    if (!widget.isFullExam) {
+    if (widget.customQuestionCount != null) {
+      qs = qs.take(questionsCount).toList();
+    } else if (!widget.isFullExam) {
       qs = qs.take(questionsCount).toList();
     }
 
@@ -85,18 +102,20 @@ class _ExamScreenState extends State<ExamScreen> {
             )
             .toList();
 
-    timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (secondsRemaining == 0) {
-        _finishExam();
-      } else {
-        setState(() => secondsRemaining--);
-      }
-    });
+    if (widget.isTimed) {
+      timer = Timer.periodic(const Duration(seconds: 1), (t) {
+        if (secondsRemaining == 0) {
+          _finishExam();
+        } else {
+          setState(() => secondsRemaining--);
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -107,7 +126,7 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
   void _finishExam() {
-    timer.cancel();
+    timer?.cancel();
     int totalCorrect = 0;
     for (var q in examQuestions) {
       if (answers[q.question.id] == q.question.correctOptionId) {
@@ -115,7 +134,10 @@ class _ExamScreenState extends State<ExamScreen> {
       }
     }
 
-    final int timeSpent = totalDurationSeconds - secondsRemaining;
+    final int timeSpent =
+        widget.isTimed
+            ? totalDurationSeconds - secondsRemaining
+            : DateTime.now().difference(startedAt).inSeconds;
 
     Navigator.pushReplacement(
       context,
@@ -175,7 +197,7 @@ class _ExamScreenState extends State<ExamScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  timer.cancel();
+                  timer?.cancel();
                   Navigator.pop(ctx);
                   Navigator.pop(context);
                 },
@@ -196,7 +218,7 @@ class _ExamScreenState extends State<ExamScreen> {
     final progress = (currentIndex + 1) / examQuestions.length;
     final bool isLastQuestion = currentIndex == examQuestions.length - 1;
     final bool hasAnswered = answers.containsKey(currentQ.id);
-    final bool isTimeLow = secondsRemaining < 60;
+    final bool isTimeLow = widget.isTimed && secondsRemaining < 60;
 
     return Scaffold(
       appBar: AppBar(
@@ -228,36 +250,65 @@ class _ExamScreenState extends State<ExamScreen> {
           ],
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color:
-                  isTimeLow
-                      ? AppColors.red.withValues(alpha: 0.12)
-                      : AppColors.orange.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 18,
-                  color: isTimeLow ? AppColors.red : AppColors.orange,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  _formatTime(secondsRemaining),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+          if (widget.isTimed)
+            Container(
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color:
+                    isTimeLow
+                        ? AppColors.red.withValues(alpha: 0.12)
+                        : AppColors.orange.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: 18,
                     color: isTimeLow ? AppColors.red : AppColors.orange,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Text(
+                    _formatTime(secondsRemaining),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: isTimeLow ? AppColors.red : AppColors.orange,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container(
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.timer_off_outlined,
+                    size: 18,
+                    color: AppColors.secondary,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    'Libre',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
       body: Column(
@@ -688,10 +739,12 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   Future<void> _saveResult() async {
     try {
+      final scorePercent = (widget.totalCorrect / widget.totalQuestions) * 100;
+      final passed = scorePercent >= widget.passingPercentage;
       final result = ExamResult(
         correctAnswers: widget.totalCorrect,
         totalQuestions: widget.totalQuestions,
-        passed: widget.totalCorrect >= EXAM_PASSING_SCORE,
+        passed: passed,
         timeSpentSeconds: widget.timeSpentSeconds,
         date: DateTime.now(),
       );
@@ -701,13 +754,16 @@ class _ResultsScreenState extends State<ResultsScreen>
       final failedIds = <int>[];
       final categoryIds = <int>{};
       final categoryResults = <int, ({int correct, int incorrect})>{};
+      final reviewOutcomes = <int, bool>{};
       for (var q in widget.examQuestions) {
         final selectedId = widget.answers[q.question.id];
         final categoryId = q.question.category.index;
         final previous =
             categoryResults[categoryId] ?? (correct: 0, incorrect: 0);
+        final isCorrect = selectedId == q.question.correctOptionId;
 
-        if (selectedId == null || selectedId != q.question.correctOptionId) {
+        reviewOutcomes[q.question.id] = isCorrect;
+        if (!isCorrect) {
           failedIds.add(q.question.id);
           categoryResults[categoryId] = (
             correct: previous.correct,
@@ -725,6 +781,7 @@ class _ResultsScreenState extends State<ResultsScreen>
         await DatabaseService().saveFailedQuestions(failedIds);
       }
       await DatabaseService().recordCategoryPerformance(categoryResults);
+      await DatabaseService().recordReviewOutcomes(reviewOutcomes);
 
       // Check achievements
       final stats = await DatabaseService().getAllStats();
@@ -732,7 +789,7 @@ class _ResultsScreenState extends State<ResultsScreen>
       await AchievementService().onExamResultSaved(
         correctAnswers: widget.totalCorrect,
         totalQuestions: widget.totalQuestions,
-        passed: widget.totalCorrect >= EXAM_PASSING_SCORE,
+        passed: passed,
         timeSpentSeconds: widget.timeSpentSeconds,
         streak: stats['streak'] as int,
         totalExams: stats['totalExams'] as int,
@@ -756,7 +813,8 @@ class _ResultsScreenState extends State<ResultsScreen>
       if (hasRequestedReview) return;
 
       // Only show if user passed the exam
-      final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
+      final scorePercent = (widget.totalCorrect / widget.totalQuestions) * 100;
+      final bool passed = scorePercent >= widget.passingPercentage;
       if (!passed) return;
 
       // Check if user has completed 3+ exams
@@ -784,8 +842,8 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bool passed = widget.totalCorrect >= EXAM_PASSING_SCORE;
     final double percentage = widget.totalCorrect / widget.totalQuestions;
+    final bool passed = percentage * 100 >= widget.passingPercentage;
     final Color accentColor = passed ? AppColors.primary : AppColors.red;
 
     return Scaffold(
@@ -872,7 +930,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     Text(
                       passed
                           ? 'Aprobaste el examen de práctica.\n¡Estás listo para el examen real!'
-                          : 'Necesitas al menos 6 respuestas correctas\npara aprobar. ¡Tú puedes!',
+                          : 'Necesitas al menos ${widget.passingPercentage.round()}%\npara aprobar. ¡Tú puedes!',
                       style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary(context),

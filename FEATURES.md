@@ -2,13 +2,13 @@
 
 ## Core Study Enhancements
 
-### 1. Road Sign Recognition Quiz
+### 1. Road Sign Recognition Quiz (Implemented ✓)
 Image-based identification game where users see a sign image and must identify its meaning from multiple choice options. Categories: preventive, restrictive, informational. Includes a "Speed Round" mode with timer pressure.
 
-### 2. Weak Areas Identification
+### 2. Weak Areas Identification (Implemented ✓)
 Automatically detect questions categories where the user consistently fails. Display a "Areas de oportunidad" section highlighting the weakest categories with suggested targeted practice.
 
-### 3. Spaced Repetition System
+### 3. Spaced Repetition System (Implemented ✓)
 Prioritize questions answered incorrectly for future practice sessions. Uses an algorithm to schedule difficult questions more frequently. Creates a "Repasar" (Review) queue based on historical performance.
 
 ### 4. Interactive Traffic Map
@@ -37,7 +37,7 @@ Android home screen widget showing a daily practice question. Tapping opens dire
 ### 9. Offline Mode
 Download all questions and PDFs for offline access. Sync progress when connection restored. Queue-based sync for exam results taken offline.
 
-### 10. Custom Exams Builder
+### 10. Custom Exams Builder (Implemented ✓)
 Create custom exam sessions by selecting specific categories, difficulty, and question count. Save custom exams as presets. Share presets with other users.
 
 ### 11. Export Results as PDF
@@ -93,7 +93,7 @@ Voice command: "Hey Siri,/start my driving practice" opens the app to quick exam
 ## Technical / Infrastructure
 
 ### 23. Cloud Sync
-Cross-device synchronization of progress, favorites, and achievements using Firebase Auth + Firestore. Login optional but enables backup.
+Cross-device synchronization of progress, favorites, achievements, review queue, and weak areas using Supabase Auth + Postgres. Login optional but enables backup.
 
 ### 24. A/B Testing Framework
 Test different UI layouts, onboarding flows, or exam algorithms with user groups. Firebase Remote Config for feature flags.
@@ -115,7 +115,19 @@ Weekly/monthly rankings by exam pass rate and streak. Leaderboard categories: al
 Allow users to report questions with errors or outdated information. Admin dashboard for reviewing reports and pushing corrections via remote config.
 
 ### 29. Community Tips Section
-User-submitted exam tips and tricks. Upvote/downvote system. Moderated for quality.
+User-submitted exam tips and tricks backed by Supabase. Upvote/downvote system, pending/approved/rejected moderation states, category filters, and local reporting for low-quality tips.
+
+### 30. Remote Question Updates
+Use Supabase to publish corrected or newly added exam questions without requiring an app update. Includes versioning, active/inactive status, category tags, explanations, and optional image URLs.
+
+### 31. Question Reports & Admin Review
+Let users report confusing, outdated, or incorrect questions. Store reports in Supabase with device/user metadata, question ID, reason, and status so an admin can review and resolve them.
+
+### 32. Anonymous Community Insights
+Aggregate anonymized exam performance in Supabase to show globally difficult categories/questions. Could power messages like "Esta pregunta la falla mucha gente" or a developer dashboard of most-missed questions.
+
+### 33. Public Leaderboards
+Weekly/monthly anonymous rankings by streak, exam score, or sign quiz score using Supabase tables and row-level security. Optional display name, no personal data required.
 
 ---
 
@@ -127,5 +139,7 @@ User-submitted exam tips and tricks. Upvote/downvote system. Moderated for quali
 | 🔴 High | Weak Areas ID | Clear value add, already have data |
 | 🟡 Medium | Offline Mode | Major Prodifferentiator |
 | 🟡 Medium | Custom Exams | Good for Pro tier |
+| 🟡 Medium | Supabase Community Tips | Adds useful community value once backend is connected |
+| 🟡 Medium | Remote Question Updates | Lets content improve without Play Store releases |
 | 🟢 Low | Video Lessons | Content-heavy, requires ongoing effort |
-| 🟢 Low | Cloud Sync | Complex backend, consider Firebase |
+| 🟢 Low | Cloud Sync | Easier once Supabase Auth/Postgres is configured |
